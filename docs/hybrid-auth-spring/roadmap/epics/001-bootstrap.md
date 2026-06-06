@@ -6,7 +6,10 @@ status: planned
 owner: Johnny Carreiro
 sdd:
 target_window: 2026-06
-roadmap_cards: []
+milestone: 001-bootstrap
+roadmap_cards:
+  - 001-build-skeleton
+  - 002-ci-pipeline
 sprints: []
 related_decisions:
   - ADR-0001 — testing stack
@@ -20,7 +23,7 @@ exits_with:
 
 # EPIC-001 — bootstrap
 
-Milestone: [[../roadmap/milestones/001-bootstrap|MILESTONE-001]] (1:1).
+Milestone: [[../milestones/001-bootstrap|MILESTONE-001]] (1:1). Features: [[../features/001-build-skeleton|FEAT-001]], [[../features/002-ci-pipeline|FEAT-002]].
 
 ## Why
 

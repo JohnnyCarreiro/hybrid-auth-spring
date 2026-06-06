@@ -6,7 +6,9 @@ status: done
 owner: Johnny Carreiro
 sdd:
 target_window: 2026-06
-roadmap_cards: []
+milestone: 000-scaffold
+roadmap_cards:
+  - 000-docs-foundation
 sprints: []
 related_decisions:
   - ADR-0001 — testing stack
@@ -22,7 +24,7 @@ exits_with:
 
 # EPIC-000 — scaffold
 
-Milestone: [[../roadmap/milestones/000-scaffold|MILESTONE-000]] (1:1).
+Milestone: [[../milestones/000-scaffold|MILESTONE-000]] (1:1). Feature: [[../features/000-docs-foundation|FEAT-000]].
 
 ## Why
 

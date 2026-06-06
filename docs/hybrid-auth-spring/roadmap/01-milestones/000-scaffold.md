@@ -15,7 +15,7 @@ date: 2026-06-05
 
 Stand up the project's documentation and architecture foundation before any code: what we're building
 (SRS+SAD), how the auth domain works (SDD-001), the decisions behind the stack (ADRs), and the
-management trail (roadmap/epics/board). This milestone delivers the trail a build can follow — no
+management trail (roadmap board). This milestone delivers the trail a build can follow — no
 application code.
 
 ## Delivers (SDDs / epics it groups)

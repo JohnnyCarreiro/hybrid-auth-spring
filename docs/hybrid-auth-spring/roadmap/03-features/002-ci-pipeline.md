@@ -13,7 +13,7 @@ date: 2026-06-06
 
 # FEAT-002 — ci pipeline
 
-Realizes [[../epics/001-bootstrap|EPIC-001 — bootstrap]] · [[../milestones/001-bootstrap|MILESTONE-001]].
+Realizes [[../02-epics/001-bootstrap|EPIC-001 — bootstrap]] · [[../01-milestones/001-bootstrap|MILESTONE-001]].
 Infra feature — no FRD/SDD. Resolves OQ-002 / OQ-003.
 
 ## Intent

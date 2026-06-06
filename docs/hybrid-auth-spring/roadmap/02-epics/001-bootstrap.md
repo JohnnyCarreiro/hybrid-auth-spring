@@ -23,7 +23,7 @@ exits_with:
 
 # EPIC-001 — bootstrap
 
-Milestone: [[../milestones/001-bootstrap|MILESTONE-001]] (1:1). Features: [[../features/001-build-skeleton|FEAT-001]], [[../features/002-ci-pipeline|FEAT-002]].
+Milestone: [[../01-milestones/001-bootstrap|MILESTONE-001]] (1:1). Features: [[../03-features/001-build-skeleton|FEAT-001]], [[../03-features/002-ci-pipeline|FEAT-002]].
 
 ## Why
 

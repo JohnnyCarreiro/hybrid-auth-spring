@@ -4,7 +4,7 @@ const slug = await tp.system.prompt("Epic slug (kebab-case)");
 const type = await tp.system.prompt("Type (capability | refactor | infra)");
 const owner = await tp.system.prompt("Owner (person / team)");
 await tp.file.rename(`${id}-${slug}`);
-await tp.file.move(`/epics/${id}-${slug}`);
+await tp.file.move(`/roadmap/02-epics/${id}-${slug}`);
 const date = tp.date.now("YYYY-MM-DD");
 -%>
 ---

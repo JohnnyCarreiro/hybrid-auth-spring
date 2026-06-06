@@ -13,7 +13,7 @@ date: 2026-06-06
 
 # FEAT-000 — docs foundation
 
-Realizes [[../epics/000-scaffold|EPIC-000 — scaffold]] · [[../milestones/000-scaffold|MILESTONE-000]].
+Realizes [[../02-epics/000-scaffold|EPIC-000 — scaffold]] · [[../01-milestones/000-scaffold|MILESTONE-000]].
 Infra feature — no FRD/SDD; the deliverable **is** the documentation/architecture foundation.
 
 ## Intent

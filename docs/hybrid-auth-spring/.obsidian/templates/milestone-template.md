@@ -4,7 +4,7 @@ const title = await tp.system.prompt("Milestone title (e.g. Auth, MVP, v1)");
 const window = await tp.system.prompt("Target window (e.g. 2026-Q3, or a date range)", "");
 const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 await tp.file.rename(`${id}-${slug}`);
-await tp.file.move(`/roadmap/milestones/${id}-${slug}`);
+await tp.file.move(`/roadmap/01-milestones/${id}-${slug}`);
 const date = tp.date.now("YYYY-MM-DD");
 -%>
 ---

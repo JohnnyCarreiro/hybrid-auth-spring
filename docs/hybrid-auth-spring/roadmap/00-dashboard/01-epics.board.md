@@ -6,7 +6,7 @@ kanban-plugin: board
 
 ## Planned
 
-- [ ] [[../epics/001-bootstrap|EPIC-001 — bootstrap]]
+- [ ] [[../02-epics/001-bootstrap|EPIC-001 — bootstrap]]
 
 ## Active
 
@@ -14,7 +14,7 @@ kanban-plugin: board
 
 ## Done
 
-- [x] [[../epics/000-scaffold|EPIC-000 — scaffold]]
+- [x] [[../02-epics/000-scaffold|EPIC-000 — scaffold]]
 
 ## Parked
 

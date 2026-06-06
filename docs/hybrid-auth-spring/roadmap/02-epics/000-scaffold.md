@@ -24,7 +24,7 @@ exits_with:
 
 # EPIC-000 — scaffold
 
-Milestone: [[../milestones/000-scaffold|MILESTONE-000]] (1:1). Feature: [[../features/000-docs-foundation|FEAT-000]].
+Milestone: [[../01-milestones/000-scaffold|MILESTONE-000]] (1:1). Feature: [[../03-features/000-docs-foundation|FEAT-000]].
 
 ## Why
 
@@ -44,7 +44,7 @@ default + `main`) and pushed to GitHub.
 - SRS+SAD, threat model, open questions.
 - Auth domain SDD (SDD-001).
 - ADR-0001 (testing stack), ADR-0002 (auth issuer stack).
-- Methodology + playbook, roadmap/epics/board structure.
+- Methodology + playbook, roadmap board structure.
 - Repository init, commit hygiene, first push.
 
 ## Out of scope

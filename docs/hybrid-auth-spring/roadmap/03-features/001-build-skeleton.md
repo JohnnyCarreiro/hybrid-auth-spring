@@ -13,7 +13,7 @@ date: 2026-06-06
 
 # FEAT-001 — build skeleton
 
-Realizes [[../epics/001-bootstrap|EPIC-001 — bootstrap]] · [[../milestones/001-bootstrap|MILESTONE-001]].
+Realizes [[../02-epics/001-bootstrap|EPIC-001 — bootstrap]] · [[../01-milestones/001-bootstrap|MILESTONE-001]].
 Infra feature — no FRD/SDD.
 
 ## Intent

@@ -6,7 +6,7 @@ kanban-plugin: board
 
 ## Planned
 
-- [ ] [[../milestones/001-bootstrap|MILESTONE-001 — bootstrap]]
+- [ ] [[../01-milestones/001-bootstrap|MILESTONE-001 — bootstrap]]
 
 ## Active
 
@@ -14,7 +14,7 @@ kanban-plugin: board
 
 ## Done
 
-- [x] [[../milestones/000-scaffold|MILESTONE-000 — scaffold]]
+- [x] [[../01-milestones/000-scaffold|MILESTONE-000 — scaffold]]
 
 
 %% kanban:settings

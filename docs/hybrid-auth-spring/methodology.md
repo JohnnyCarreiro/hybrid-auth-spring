@@ -245,7 +245,7 @@ Move file from `backlogs/<id>-<slug>.md` → `roadmap/<id>-<slug>.md` (rename ID
 Templater → `epic-template.md` → fill `why`, `outcome`, `scope`, `exits_with`. Set `sdd:` to the one SDD this epic delivers (or leave blank if cross-cutting). Kanban: **Planned**. Move to **Active** when a sprint commits to it (Mode A) or when the first feature lands inside (Mode B/C).
 
 ### 6.3b Create a Milestone
-Templater → `milestone-template.md` → lands under `roadmap/milestones/<slug>.md` (or a section in `roadmap/`). A milestone is a **management** delivery grouping that spans 1..N SDDs/epics plus cross-cutting work (Milestone : SDD = 1 : N). Fill the window, the SDDs/epics it delivers (by ref), cross-cutting items, and the exit. It references docs; docs never point back.
+Templater → `milestone-template.md` → lands under `roadmap/milestones/<slug>.md` (or a section in `roadmap/`). A milestone is a **management** delivery grouping that spans 1..N SDDs/epics plus cross-cutting work (Milestone : SDD = 1 : N). Fill the window, the SDDs/epics it delivers (by ref), cross-cutting items, and the exit. It references docs; docs never point back. **Naming:** one epic → the milestone takes that epic's slug (1:1, no redundant name); 2+ epics → a deliverable name of its own. IDs are independent sequences; only the slug is shared in the 1:1 case.
 
 ### 6.4 Close an epic
 Verify all `exits_with` checked. Move kanban entry to **Done**. Follow §5 (release).

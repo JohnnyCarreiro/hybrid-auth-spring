@@ -78,12 +78,7 @@ fmt: ## Format sources (Spotless / google-java-format, Dockerized)
 check: ## Lint/format check (Spotless, Dockerized)
 	$(GRADLE) spotlessCheck
 
-hooks-install: ## Download lefthook to ./.tools and install local git hooks (no global/npm)
-	@mkdir -p .tools
-	@v=1.7.18; os=$$(uname -s); arch=$$(uname -m); \
-		case "$$arch" in x86_64|amd64) arch=x86_64;; aarch64|arm64) arch=arm64;; esac; \
-		url="https://github.com/evilmartians/lefthook/releases/download/v$$v/lefthook_$${v}_$${os}_$${arch}.gz"; \
-		echo "downloading $$url"; \
-		curl -fsSL "$$url" | gzip -d > .tools/lefthook && chmod +x .tools/lefthook; \
-		git config core.hooksPath .githooks; \
-		echo "hooks installed (lefthook $$v local in ./.tools; core.hooksPath=.githooks)"
+hooks-install: ## Install local git hooks (plain POSIX, no deps)
+	@chmod +x .githooks/*
+	@git config core.hooksPath .githooks
+	@echo "hooks installed (core.hooksPath=.githooks)"

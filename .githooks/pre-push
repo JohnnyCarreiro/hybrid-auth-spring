@@ -1,4 +1,6 @@
 #!/bin/sh
-# Versioned wrapper → project-local lefthook (no global, no npm). Wired via core.hooksPath.
-[ -x ./.tools/lefthook ] || { echo "lefthook missing — run: just hooks-install (or make hooks-install)"; exit 1; }
-exec ./.tools/lefthook run pre-push "$@"
+# Block direct pushes of protected branches (convenience; branch protection enforces it server-side).
+branch=$(git rev-parse --abbrev-ref HEAD)
+case "$branch" in
+  dev | main) echo "✋ don't push '$branch' directly — open a PR"; exit 1 ;;
+esac

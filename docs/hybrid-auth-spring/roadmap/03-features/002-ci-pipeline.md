@@ -60,3 +60,5 @@ from Conventional Commits (playbook §16.2).
 
 - CI is wired but its first green run is exercised on the **epic→dev PR** (CI only runs on PRs).
 - Branch protection applied on `dev`/`main` (PR-only; `main` no-bypass) — the `dev→main` release is now a PR; local commits in CI contexts use `--no-verify` (the human dev keeps the hooks).
+
+- Correction: local hooks are **plain POSIX `.githooks/`** (not lefthook) — see playbook-java §6; lefthook needs a global/npm/PATH binary and auto-syncs over custom wrappers.

@@ -1,4 +1,15 @@
 #!/bin/sh
-# Versioned wrapper → project-local lefthook (no global, no npm). Wired via core.hooksPath.
-[ -x ./.tools/lefthook ] || { echo "lefthook missing — run: just hooks-install (or make hooks-install)"; exit 1; }
-exec ./.tools/lefthook run pre-commit "$@"
+# Local pre-commit (no deps). Convenience/fast-feedback — bypassable with --no-verify.
+# The authoritative guard is GitHub branch protection (dev/main require PRs; main no-bypass).
+
+branch=$(git rev-parse --abbrev-ref HEAD)
+case "$branch" in
+  dev | main) echo "✋ no direct commits on '$branch' — use a feat/epic branch and open a PR"; exit 1 ;;
+esac
+
+staged=$(git diff --cached --name-only --diff-filter=ACM | grep '\.java$' || true)
+[ -z "$staged" ] && exit 0
+
+# Format staged Java with Spotless (needs a host JDK 21) and re-stage.
+./gradlew spotlessApply -q || exit 1
+echo "$staged" | xargs git add

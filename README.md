@@ -37,7 +37,7 @@ just dev-auth           # one at a time: dev-auth / dev-resource
 ## Contributing / dev setup
 
 ```sh
-just hooks-install      # downloads lefthook locally (./.tools) + wires git hooks (no global, no npm)
+just hooks-install      # wires local git hooks (plain POSIX, no deps): core.hooksPath → .githooks/
 ```
 
 - **Branching** (small tier): `feat/<NNN>-<slug>` → merge into `epic/<NNN>-<slug>` → **PR to `dev`**;

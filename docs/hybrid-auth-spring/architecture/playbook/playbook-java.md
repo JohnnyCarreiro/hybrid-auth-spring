@@ -46,6 +46,8 @@ conflicts with `playbook-base.md`, the base wins — flag it.
 
 - Tier `small`: `feat/<NNN>` → `epic/<NNN>` (local) → **PR to `dev`**; `dev → main` = release (tag).
   `dev`/`main` protected (PR-only; `main` no-bypass) — see playbook-base §16.2.
-- **Conventional Commits**: local `commit-msg` regex (lefthook, project-local binary in `./.tools`,
-  no npm/global) + CI validates the **PR title**. commitlint lives **only in CI** (`commitlint.config.js`).
+- **Conventional Commits**: local `commit-msg` regex in a plain POSIX hook (`.githooks/`, wired via
+  `core.hooksPath`; `just hooks-install` — no deps) + CI validates the **PR title**. commitlint lives
+  **only in CI** (`commitlint.config.js`). (lefthook was evaluated but its hooks need a global/npm/PATH
+  binary and auto-sync clobbers custom wrappers — plain hooks satisfy no-global/no-npm/local cleanly.)
 - CI: `./gradlew build` (tests via runner Docker) + `spotlessCheck` on every PR.

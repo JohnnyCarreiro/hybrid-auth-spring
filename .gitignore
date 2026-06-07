@@ -25,5 +25,5 @@ build/
 .vscode/
 .DS_Store
 
-# --- Local tooling (project-local binaries, e.g. lefthook) ---
+# --- Local tooling (project-local binaries) ---
 .tools/

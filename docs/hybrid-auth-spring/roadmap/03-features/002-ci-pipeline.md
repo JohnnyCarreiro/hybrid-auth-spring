@@ -76,7 +76,8 @@ from Conventional Commits (playbook §16.2).
   - `.release-please-manifest.json` — seeded root package `.` at `0.0.0` so the first `feat:` cut is **v0.1.0**.
   - `build.gradle.kts` version line annotated `// x-release-please-version` (now `0.0.0`, no `-SNAPSHOT`;
     the release PR rewrites it). `simple` won't create a stray `version.txt` (`createIfMissing: false`).
-- **Open (defer to the v0.1.0 step):** the release PR is opened by the default `GITHUB_TOKEN`, so it does
-  **not** trigger the `build`/`commit-convention` checks that `main`'s branch protection requires — the PR
-  can't be merged until those pass. Resolve at release time by either (a) a PAT in `token:`, or (b)
-  temporarily relaxing the required checks on `main` for the release PR. Not solved now (no PRs yet).
+- **Resolved 2026-06-07 (PAT):** the release PR is opened by the default `GITHUB_TOKEN`, which does **not**
+  trigger the `build`/`commit-convention` checks that `main`'s branch protection requires (GitHub
+  anti-recursion) — so the PR would never become mergeable. Fixed by opening it under a **fine-grained PAT**
+  (`token: ${{ secrets.RELEASE_PLEASE_TOKEN }}`, Contents RW + Pull requests RW on this repo), so the
+  checks run. **Follow-up:** migrate to a GitHub App token (no PAT expiry) — tracked in `open-questions.md`.

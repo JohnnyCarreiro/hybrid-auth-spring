@@ -5,6 +5,13 @@ name: release-please
 # the version + updates CHANGELOG.md; merging that PR creates the git tag and the
 # GitHub Release. Pre-1.0: seeded at 0.0.0 with bump-minor-pre-major, so the first
 # `feat:` cut lands as v0.1.0. See docs/.../roadmap/03-features/002-ci-pipeline.md.
+#
+# `token` is a fine-grained PAT (secret RELEASE_PLEASE_TOKEN: Contents RW + Pull
+# requests RW on this repo), NOT the default GITHUB_TOKEN. The default token's PRs
+# do not trigger other workflows (GitHub anti-recursion), so the release PR would
+# never run the `build`/`commit-convention` checks that `main`'s protection
+# requires. Opening it under a PAT makes those checks run so the PR can merge.
+# (Planned upgrade to a GitHub App token — no expiry — tracked as a follow-up.)
 
 on:
   push:
@@ -21,5 +28,6 @@ jobs:
     steps:
       - uses: googleapis/release-please-action@v4
         with:
+          token: ${{ secrets.RELEASE_PLEASE_TOKEN }}
           config-file: release-please-config.json
           manifest-file: .release-please-manifest.json

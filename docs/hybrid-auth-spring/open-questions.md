@@ -15,6 +15,14 @@ Options:
 
 Leaning (a). Decide while building F1 (sign-up) — see `architecture/sdds/sdd-auth.md` §8.
 
+### OQ-006 — release-please auth: PAT → GitHub App (2026-06-07)
+
+The release PR must run `main`'s required checks, so it is opened under a **fine-grained PAT**
+(`secret RELEASE_PLEASE_TOKEN`) instead of the default `GITHUB_TOKEN` (whose PRs don't trigger workflows).
+PAT works but expires (≤1 y) and acts as the human author. **Migrate to a GitHub App token**
+(`actions/create-github-app-token`) — no expiry, bot identity, repo-scoped. Do it on a CI-config PR;
+swap `token:` from the PAT secret to the app-token step output. Not urgent — the PAT unblocks `v0.1.0`.
+
 ## Resolved
 
 - [x] Tier = `small` (combined `srs+sad.md`) — 2026-06-05.

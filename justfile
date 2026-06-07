@@ -81,10 +81,16 @@ health:
     @curl -fsS localhost:${AUTH_PORT:-3333}/health && echo "  <- auth-service" || echo "auth-service down"
     @curl -fsS localhost:${RESOURCE_PORT:-3334}/health && echo "  <- resource-service" || echo "resource-service down"
 
-# Format sources (Spotless) — lands in FEAT-002
+# Format sources (Spotless / google-java-format, Dockerized)
 fmt:
-    @echo "Spotless not wired yet — FEAT-002 (ci-pipeline)."
+    {{_gradle}} spotlessApply
 
-# Lint/format check (Spotless) — lands in FEAT-002
+# Lint/format check (Spotless, Dockerized)
 check:
-    @echo "spotlessCheck not wired yet — FEAT-002 (ci-pipeline)."
+    {{_gradle}} spotlessCheck
+
+# Install local git hooks (plain POSIX, no deps)
+hooks-install:
+    chmod +x .githooks/*
+    git config core.hooksPath .githooks
+    @echo "hooks installed (core.hooksPath=.githooks)"

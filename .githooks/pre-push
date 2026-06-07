@@ -1,0 +1,6 @@
+#!/bin/sh
+# Block direct pushes of protected branches (convenience; branch protection enforces it server-side).
+branch=$(git rev-parse --abbrev-ref HEAD)
+case "$branch" in
+  dev | main) echo "✋ don't push '$branch' directly — open a PR"; exit 1 ;;
+esac

@@ -11,7 +11,7 @@ COMPOSE := docker compose
 .PHONY: help docker-build docker-clean docker-up docker-up-infra \
 	docker-run docker-run-auth docker-run-resource docker-down docker-down-v \
 	docker-logs docker-ps docker-psql-auth docker-psql-app dev-run dev-auth dev-resource \
-	test health fmt check
+	test health fmt check hooks-install
 
 help: ## List available targets
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | \
@@ -72,8 +72,13 @@ health: ## Curl both /health endpoints
 	@curl -fsS localhost:$${AUTH_PORT:-3333}/health && echo "  <- auth-service" || echo "auth-service down"
 	@curl -fsS localhost:$${RESOURCE_PORT:-3334}/health && echo "  <- resource-service" || echo "resource-service down"
 
-fmt: ## Format sources (Spotless) — lands in FEAT-002
-	@echo "Spotless not wired yet — FEAT-002 (ci-pipeline)."
+fmt: ## Format sources (Spotless / google-java-format, Dockerized)
+	$(GRADLE) spotlessApply
 
-check: ## Lint/format check (Spotless) — lands in FEAT-002
-	@echo "spotlessCheck not wired yet — FEAT-002 (ci-pipeline)."
+check: ## Lint/format check (Spotless, Dockerized)
+	$(GRADLE) spotlessCheck
+
+hooks-install: ## Install local git hooks (plain POSIX, no deps)
+	@chmod +x .githooks/*
+	@git config core.hooksPath .githooks
+	@echo "hooks installed (core.hooksPath=.githooks)"

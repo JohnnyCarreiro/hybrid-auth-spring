@@ -1,0 +1,8 @@
+#!/bin/sh
+# Conventional Commits check (no deps). Merge/revert/fixup commits are exempt.
+msg=$(head -1 "$1")
+case "$msg" in
+  "Merge "* | "Revert "* | "fixup!"* | "squash!"*) exit 0 ;;
+esac
+echo "$msg" | grep -qE '^(feat|fix|docs|chore|refactor|test|build|ci|perf|style|revert)(\([a-z0-9-]+\))?!?: .+' \
+  || { echo "✋ commit message must follow Conventional Commits: type(scope): subject"; exit 1; }

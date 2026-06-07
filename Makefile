@@ -10,7 +10,8 @@ COMPOSE := docker compose
 .DEFAULT_GOAL := help
 .PHONY: help docker-build docker-test docker-clean docker-up docker-up-infra \
 	docker-run docker-run-auth docker-run-resource docker-down docker-down-v \
-	docker-logs docker-ps docker-psql-auth docker-psql-app health fmt check
+	docker-logs docker-ps docker-psql-auth docker-psql-app dev-run dev-auth dev-resource \
+	health fmt check
 
 help: ## List available targets
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | \
@@ -39,6 +40,15 @@ docker-run-auth: ## Run only auth-service in the foreground (brings up its deps)
 
 docker-run-resource: ## Run only resource-service in the foreground (brings up its deps)
 	$(COMPOSE) up --build resource-service
+
+dev-run: ## Run BOTH services on the HOST via bootRun, in parallel (needs JDK 21)
+	./gradlew --parallel :auth-service:bootRun :resource-service:bootRun
+
+dev-auth: ## Run auth-service on the HOST via bootRun — fast loop, hot reload (needs JDK 21)
+	./gradlew :auth-service:bootRun
+
+dev-resource: ## Run resource-service on the HOST via bootRun — fast loop, hot reload (needs JDK 21)
+	./gradlew :resource-service:bootRun
 
 docker-down: ## Stop the stack
 	$(COMPOSE) down

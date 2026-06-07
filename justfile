@@ -40,6 +40,18 @@ docker-run-auth:
 docker-run-resource:
     docker compose up --build resource-service
 
+# Run BOTH services on the HOST via bootRun, in parallel (needs JDK 21)
+dev-run:
+    ./gradlew --parallel :auth-service:bootRun :resource-service:bootRun
+
+# Run auth-service on the HOST via bootRun — fast loop, hot reload (needs JDK 21)
+dev-auth:
+    ./gradlew :auth-service:bootRun
+
+# Run resource-service on the HOST via bootRun — fast loop, hot reload (needs JDK 21)
+dev-resource:
+    ./gradlew :resource-service:bootRun
+
 # Stop the stack
 docker-down:
     docker compose down

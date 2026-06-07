@@ -2,7 +2,7 @@
 FROM gradle:8.10.2-jdk21 AS build
 WORKDIR /workspace
 COPY . .
-RUN gradle :resource-service:bootJar --no-daemon
+RUN --mount=type=cache,target=/home/gradle/.gradle gradle :resource-service:bootJar --no-daemon
 
 FROM eclipse-temurin:21-jre
 RUN apt-get update \

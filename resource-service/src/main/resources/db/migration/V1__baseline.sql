@@ -1,0 +1,3 @@
+-- Baseline for the app database (ADR-0003 / ADR-0004).
+-- Establishes the Flyway pipeline; domain tables (users mirror, projects, tasks)
+-- arrive with their features. No schema objects yet.

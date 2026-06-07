@@ -4,42 +4,6 @@ Running list of things we haven't decided. Keep entries dated. Move to ADRs when
 
 ## Active
 
-### OQ-001 — No `playbook-java.md` in the template (2026-06-05)
-
-The project-template ships only `playbook-base.md`, `playbook-rust.md`, and `playbook-ts.md`. There is
-no Java playbook, so only `playbook-base.md` was copied into `architecture/playbook/`. The base
-playbook is language-agnostic and fully applies; the Java-specific addendum (idioms, Spring patterns,
-build conventions) is missing.
-
-Options:
-- (a) Author a generic `playbook-java.md` in the shared template repo (`templates/project_templates/playbooks/`) so every future Java project inherits it.
-- (b) Author a project-local `playbook-java.md` here only, promote to the template later if it generalizes.
-- (c) Stay on `playbook-base.md` alone for this showcase; defer a Java playbook entirely.
-
-Leaning (b) — capture Java/Spring conventions as we build, promote to the template if they hold. Decide during/after Pass 1.
-
-### OQ-002 — Java CI workflow (2026-06-05)
-
-`_shared/github-workflows/` only provides `rust-ci.yml` and `lint-and-typecheck-ts.yml`. No Java/Gradle
-CI was copied. `.github/workflows/` is empty.
-
-Options:
-- (a) Add a Gradle CI workflow (build + test + format check) and contribute it back to the template's `_shared/github-workflows/`.
-- (b) Add a project-local Gradle CI workflow only.
-
-Leaning (a). Decide when the build exists (Pass 1/Pass 4). No remote yet, so not blocking.
-
-### OQ-003 — Lint/format toolchain for Java (2026-06-05)
-
-AGENTS.md currently assumes **Spotless + google-java-format** (`./gradlew spotlessCheck`). Not yet wired.
-
-Options:
-- (a) Spotless + google-java-format (assumed default).
-- (b) Checkstyle + a separate formatter.
-- (c) Palantir Java Format via Spotless.
-
-Leaning (a). Confirm in Pass 1 when the Gradle build is set up.
-
 ### OQ-005 — UUID v7 generator (2026-06-05)
 
 `users`/`sessions`/`jwks` ids are UUID v7 (time-ordered — better index locality, mirrors the reference
@@ -51,6 +15,14 @@ Options:
 
 Leaning (a). Decide while building F1 (sign-up) — see `architecture/sdds/sdd-auth.md` §8.
 
+### OQ-006 — release-please auth: PAT → GitHub App (2026-06-07)
+
+The release PR must run `main`'s required checks, so it is opened under a **fine-grained PAT**
+(`secret RELEASE_PLEASE_TOKEN`) instead of the default `GITHUB_TOKEN` (whose PRs don't trigger workflows).
+PAT works but expires (≤1 y) and acts as the human author. **Migrate to a GitHub App token**
+(`actions/create-github-app-token`) — no expiry, bot identity, repo-scoped. Do it on a CI-config PR;
+swap `token:` from the PAT secret to the app-token step output. Not urgent — the PAT unblocks `v0.1.0`.
+
 ## Resolved
 
 - [x] Tier = `small` (combined `srs+sad.md`) — 2026-06-05.
@@ -59,3 +31,6 @@ Leaning (a). Decide while building F1 (sign-up) — see `architecture/sdds/sdd-a
 - [x] Second service domain = task/project manager (MVC, ownership-based authz) — 2026-06-05.
 - [x] Token TTLs / key-rotation cadence (OQ-004) = access 15 min · refresh 7 d sliding · rotation 90 d + 30 d grace, pinned in code (not env-overridable) — `adrs/0002-auth-stack-handbuilt-rs256-issuer.md`, 2026-06-05.
 - [x] Auth issuer stack = hand-built RS256 issuer on Spring Security 6 + Nimbus; resource server via `jwk-set-uri`; Argon2id passwords; refresh hashed at rest — `adrs/0002-auth-stack-handbuilt-rs256-issuer.md`, 2026-06-05.
+- [x] Java playbook (OQ-001) authored — `architecture/playbook/playbook-java.md`, 2026-06-07 (FEAT-002).
+- [x] CI (OQ-002) = GitHub Actions Gradle build+test (Testcontainers) + `spotlessCheck`; commit convention via commitlint on the PR title — 2026-06-07 (FEAT-002).
+- [x] Lint/format (OQ-003) = Spotless + google-java-format — 2026-06-07 (FEAT-002).

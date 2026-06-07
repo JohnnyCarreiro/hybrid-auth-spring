@@ -82,8 +82,44 @@ JWKS + ownership-protected CRUD path end-to-end and nothing more.
 ### 2.1 High-level shape
 
 A **Gradle multi-module monorepo**. Two Spring Boot applications (`auth-service`, `resource-service`)
-and an optional `shared` module for cross-cutting contracts. Postgres is the system of record; Redis
-is a cache / hot-path store for sessions. Everything runs locally via docker-compose.
+and an optional `shared` module for cross-cutting contracts. Each service owns an **isolated database**
+(`auth` and `app`) on a shared Postgres instance — no cross-database FK or query (ADR-0003); Redis is a
+cache / hot-path store for sessions. Everything runs locally via docker-compose.
+
+```mermaid
+flowchart TB
+    client(["Client (Insomnia / browser / app)"])
+
+    subgraph authsvc["auth-service — issuer"]
+        authapi["Spring Security 6<br/>sign-up · sign-in · /me<br/>RS256 JWT issuer · refresh rotation + reuse-detection"]
+        jwksep["GET /.well-known/jwks.json<br/>public keys (RFC 7517), cacheable"]
+        authapi -- "publishes public key(s)" --> jwksep
+    end
+
+    subgraph ressvc["resource-service — resource server"]
+        rsv["OAuth2 Resource Server<br/>jwk-set-uri → auth JWKS"]
+        resapi["Spring MVC<br/>projects · tasks (owner-scoped CRUD)"]
+        rsv --- resapi
+    end
+
+    subgraph pg["PostgreSQL — isolated DBs (ADR-0003)"]
+        authdb[("auth DB<br/>users · sessions(family_id) · jwks")]
+        appdb[("app DB<br/>users(mirror) · projects · tasks")]
+    end
+    redis[("Redis<br/>session hot-path / cache")]
+
+    client -- "sign-in / refresh / sign-out" --> authapi
+    authapi -- "RS256 access JWT + refresh" --> client
+    client -- "Bearer JWT" --> resapi
+    jwksep -. "fetch + cache public key (no per-request call)" .-> rsv
+    rsv -- "verify signature locally — NO shared secret" --> rsv
+
+    authapi --- authdb
+    authapi --- redis
+    resapi --- appdb
+```
+
+Repository layout:
 
 ```
 hybrid-auth-spring/
@@ -92,7 +128,7 @@ hybrid-auth-spring/
 ├── auth-service/                # Spring Boot app — identity & token issuance
 ├── resource-service/            # Spring Boot app — MVC task/project manager (resource server)
 ├── shared/                      # (optional) DTOs / JWT claim contracts
-├── docker-compose.yml           # Postgres + Redis (+ services)
+├── docker-compose.yml           # Postgres (auth + app DBs) + Redis (+ services)
 └── docs/hybrid-auth-spring/     # this docs vault
 ```
 
@@ -101,10 +137,11 @@ hybrid-auth-spring/
 - **auth-service** — owns identity (`users`), credentials, sessions (`sessions`: refresh tokens with
   `family_id` / `parent_id` / `rotated_at` / `revoked_at`), and signing keys (`jwks`: public +
   encrypted private). Issues RS256 JWTs, runs refresh rotation + reuse-detection, serves the JWKS
-  endpoint. Spring Security as the identity/authorization-server side.
+  endpoint. Spring Security as the identity/authorization-server side. Owns the **`auth`** database (ADR-0003).
 - **resource-service** — owns the task/project domain (`projects`, `tasks`, each with an owner).
   Configured as a Spring Security **resource server** whose `jwk-set-uri` points at the auth-service
   `.well-known` endpoint; validates JWT signatures locally and enforces ownership on every operation.
+  Owns the **`app`** database; `app.users` mirrors the auth identity by id (no cross-DB FK — ADR-0003).
 - **shared** (optional) — JWT claim shapes / DTOs both services agree on. Introduced only if it
   prevents real duplication, not preemptively.
 
@@ -113,7 +150,7 @@ hybrid-auth-spring/
 - **Runtime:** Java 21, Spring Boot 3.5, Spring Security 6, Spring Web (MVC), Spring Data JPA/JDBC,
   springdoc-openapi (Swagger UI, dev), a JOSE/JWT library (e.g. Nimbus, via Spring Security), a
   Redis client (Spring Data Redis / Lettuce).
-- **Infra:** PostgreSQL, Redis, Docker / docker-compose.
+- **Infra:** PostgreSQL (two isolated databases, `auth` + `app` — ADR-0003), Redis, Docker / docker-compose.
 - **Build:** Gradle (multi-project).
 - **Test:** JUnit 5, Mockito, Testcontainers (Postgres/Redis).
 
@@ -133,6 +170,34 @@ Sign-in then protected access:
 5. (later) client → auth-service  POST /auth/token (refresh)
                            → rotate: new refresh (parent_id=old), stamp old.rotated_at
                            → reuse of a rotated/revoked token ⇒ revoke whole family (401)
+```
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor C as Client
+    participant A as auth-service
+    participant R as resource-service
+
+    Note over C,A: Sign-in
+    C->>A: POST /auth/sign-in (email, password)
+    A->>A: verify Argon2id hash → create session (refresh, family_id)<br/>mint RS256 JWT (active private key)
+    A-->>C: { accessToken (JWT), refreshToken }
+
+    Note over C,R: Protected access — no shared secret
+    C->>R: GET /projects · Authorization: Bearer <JWT>
+    R->>A: GET /.well-known/jwks.json (first call / cache miss)
+    A-->>R: public key set (JWKS)
+    R->>R: verify JWT signature locally + claims → authorize by ownership
+    R-->>C: 200 owner's projects
+
+    Note over C,A: Refresh rotation + reuse-detection
+    C->>A: POST /auth/token (refreshToken)
+    A->>A: rotate → new refresh (parent_id=old), stamp old.rotated_at
+    A-->>C: { new accessToken, new refreshToken }
+    C->>A: POST /auth/token (rotated / revoked token)
+    A->>A: reuse detected → revoke whole family
+    A-->>C: 401 (family revoked)
 ```
 
 The resource-service never calls the auth-service per request — it verifies locally with the cached

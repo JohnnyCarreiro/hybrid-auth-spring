@@ -134,8 +134,9 @@ internally (distinct codes + logs) so the rotation logic and tests can tell them
 
 ## 6. Ports / external dependencies
 
-- **Postgres** (source of truth: `users`, `sessions`, `jwks`) via Spring Data JPA. The rotation finder
-  uses `@Lock(PESSIMISTIC_WRITE)` inside a `@Transactional` service → `SELECT … FOR UPDATE`.
+- **Postgres** — the **`auth`** database (source of truth: `users`, `sessions`, `jwks`), isolated from
+  the app store (ADR-0003), via Spring Data JPA. The rotation finder uses `@Lock(PESSIMISTIC_WRITE)`
+  inside a `@Transactional` service → `SELECT … FOR UPDATE`.
 - **Redis** — optional at MVP: refresh hot-path cache. Postgres remains the source of truth; a Redis
   outage degrades performance, not correctness (fail-open).
 - **Nimbus JOSE** (`spring-security-oauth2-jose`) — RS256 signing (`NimbusJwtEncoder`) and `JWKSet`

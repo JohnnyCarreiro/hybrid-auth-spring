@@ -24,3 +24,6 @@ build/
 *.iml
 .vscode/
 .DS_Store
+
+# --- Local tooling (project-local binaries) ---
+.tools/

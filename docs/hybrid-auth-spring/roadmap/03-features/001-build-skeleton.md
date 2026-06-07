@@ -32,6 +32,7 @@ checkout. No domain logic.
 - [x] Root Gradle build + version catalog (`gradle/libs.versions.toml`); module skeletons (Boot 3.5, Java 21).
 - [x] `auth-service` + `resource-service` app classes + `GET /health` (actuator remapped to root).
 - [x] `docker-compose.yml` (Postgres + Redis + services) + dev `.env.example` + per-service Dockerfile.
+- [x] Dev task runner: `Makefile` + `justfile` (mirrored; docker-prefixed recipes: `docker-build/test/clean`, `docker-up`/`docker-up-infra`, `docker-run` (both services) + `docker-run-auth`/`docker-run-resource`, `docker-down(-v)`, `docker-logs/ps`, `docker-psql-auth/app`; plus `health`, `fmt`/`check` stubs).
 - [ ] Smoke: `docker compose up --build` then both `/health` return 200 (needs the 2 image builds).
 
 ## Notes

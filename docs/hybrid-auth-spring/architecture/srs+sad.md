@@ -82,8 +82,9 @@ JWKS + ownership-protected CRUD path end-to-end and nothing more.
 ### 2.1 High-level shape
 
 A **Gradle multi-module monorepo**. Two Spring Boot applications (`auth-service`, `resource-service`)
-and an optional `shared` module for cross-cutting contracts. Postgres is the system of record; Redis
-is a cache / hot-path store for sessions. Everything runs locally via docker-compose.
+and an optional `shared` module for cross-cutting contracts. Each service owns an **isolated database**
+(`auth` and `app`) on a shared Postgres instance — no cross-database FK or query (ADR-0003); Redis is a
+cache / hot-path store for sessions. Everything runs locally via docker-compose.
 
 ```
 hybrid-auth-spring/
@@ -92,7 +93,7 @@ hybrid-auth-spring/
 ├── auth-service/                # Spring Boot app — identity & token issuance
 ├── resource-service/            # Spring Boot app — MVC task/project manager (resource server)
 ├── shared/                      # (optional) DTOs / JWT claim contracts
-├── docker-compose.yml           # Postgres + Redis (+ services)
+├── docker-compose.yml           # Postgres (auth + app DBs) + Redis (+ services)
 └── docs/hybrid-auth-spring/     # this docs vault
 ```
 
@@ -101,10 +102,11 @@ hybrid-auth-spring/
 - **auth-service** — owns identity (`users`), credentials, sessions (`sessions`: refresh tokens with
   `family_id` / `parent_id` / `rotated_at` / `revoked_at`), and signing keys (`jwks`: public +
   encrypted private). Issues RS256 JWTs, runs refresh rotation + reuse-detection, serves the JWKS
-  endpoint. Spring Security as the identity/authorization-server side.
+  endpoint. Spring Security as the identity/authorization-server side. Owns the **`auth`** database (ADR-0003).
 - **resource-service** — owns the task/project domain (`projects`, `tasks`, each with an owner).
   Configured as a Spring Security **resource server** whose `jwk-set-uri` points at the auth-service
   `.well-known` endpoint; validates JWT signatures locally and enforces ownership on every operation.
+  Owns the **`app`** database; `app.users` mirrors the auth identity by id (no cross-DB FK — ADR-0003).
 - **shared** (optional) — JWT claim shapes / DTOs both services agree on. Introduced only if it
   prevents real duplication, not preemptively.
 
@@ -113,7 +115,7 @@ hybrid-auth-spring/
 - **Runtime:** Java 21, Spring Boot 3.5, Spring Security 6, Spring Web (MVC), Spring Data JPA/JDBC,
   springdoc-openapi (Swagger UI, dev), a JOSE/JWT library (e.g. Nimbus, via Spring Security), a
   Redis client (Spring Data Redis / Lettuce).
-- **Infra:** PostgreSQL, Redis, Docker / docker-compose.
+- **Infra:** PostgreSQL (two isolated databases, `auth` + `app` — ADR-0003), Redis, Docker / docker-compose.
 - **Build:** Gradle (multi-project).
 - **Test:** JUnit 5, Mockito, Testcontainers (Postgres/Redis).
 

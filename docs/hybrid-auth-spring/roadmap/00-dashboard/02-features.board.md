@@ -6,11 +6,11 @@ kanban-plugin: board
 
 ## Initial
 
-- [ ] [[../03-features/002-ci-pipeline|FEAT-002 — ci pipeline]]
+
 
 ## In Progress
 
-
+- [ ] [[../03-features/002-ci-pipeline|FEAT-002 — ci pipeline]]
 
 ## Done
 

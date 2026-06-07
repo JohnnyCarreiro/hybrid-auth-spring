@@ -1,0 +1,4 @@
+#!/bin/sh
+# Versioned wrapper → project-local lefthook (no global, no npm). Wired via core.hooksPath.
+[ -x ./.tools/lefthook ] || { echo "lefthook missing — run: just hooks-install (or make hooks-install)"; exit 1; }
+exec ./.tools/lefthook run pre-push "$@"

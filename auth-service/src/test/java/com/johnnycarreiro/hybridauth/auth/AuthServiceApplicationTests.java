@@ -11,13 +11,11 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @Testcontainers
 class AuthServiceApplicationTests {
 
-    // Real Postgres for the context (ADR-0001); @ServiceConnection wires the
-    // datasource, so Flyway runs the baseline against it on context load.
-    @Container
-    @ServiceConnection
-    static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:16");
+  // Real Postgres for the context (ADR-0001); @ServiceConnection wires the
+  // datasource, so Flyway runs the baseline against it on context load.
+  @Container @ServiceConnection
+  static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:16");
 
-    @Test
-    void contextLoads() {
-    }
+  @Test
+  void contextLoads() {}
 }

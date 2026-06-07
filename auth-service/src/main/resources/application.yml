@@ -1,0 +1,14 @@
+spring:
+  application:
+    name: auth-service
+
+server:
+  port: ${AUTH_PORT:3333}
+
+# Liveness at GET /health (actuator remapped to the root base-path).
+management:
+  endpoints:
+    web:
+      base-path: /
+      exposure:
+        include: health

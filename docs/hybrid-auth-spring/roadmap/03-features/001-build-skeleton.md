@@ -23,13 +23,18 @@ checkout. No domain logic.
 
 ## Acceptance
 
-- [ ] `settings.gradle(.kts)` includes `auth-service`, `resource-service`, optional `shared`.
-- [ ] Both apps boot (health endpoint, dev profile); `./gradlew build` green across modules.
-- [ ] `docker compose up` brings up Postgres + Redis + both services.
+- [x] `settings.gradle.kts` includes `auth-service`, `resource-service`, `shared` (Kotlin DSL).
+- [x] Both apps boot (`contextLoads` green) and `./gradlew build` is green across modules (verified via Dockerized `gradle:8.10.2-jdk21`).
+- [x] `docker-compose.yml` wires Postgres + Redis + both services (`docker compose config` valid). Full `compose up --build` smoke pending.
 
 ## Tasks
 
-- [ ] Root Gradle build + version catalog; module skeletons (Boot 3.5, Java 21).
-- [ ] `auth-service` + `resource-service` app classes + `GET /health`.
-- [ ] `docker-compose.yml` (Postgres + Redis + services) + dev `.env.example`.
-- [ ] Smoke: `docker compose up` then both `/health` return 200.
+- [x] Root Gradle build + version catalog (`gradle/libs.versions.toml`); module skeletons (Boot 3.5, Java 21).
+- [x] `auth-service` + `resource-service` app classes + `GET /health` (actuator remapped to root).
+- [x] `docker-compose.yml` (Postgres + Redis + services) + dev `.env.example` + per-service Dockerfile.
+- [ ] Smoke: `docker compose up --build` then both `/health` return 200 (needs the 2 image builds).
+
+## Notes
+
+- Base package `com.johnnycarreiro.hybridauth`; ports `AUTH_PORT=3333` / `RESOURCE_PORT=3334` (env, per the backend convention).
+- Domain deps (JPA/Redis/Security) intentionally **not** added yet — the skeleton boots on `web`+`actuator` only, so it stays green without infra. They land with the auth features.

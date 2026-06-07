@@ -7,6 +7,7 @@ kanban-plugin: board
 ## Initial
 
 - [ ] [[../03-features/002-ci-pipeline|FEAT-002 — ci pipeline]]
+- [ ] [[../03-features/003-runtime-baseline|FEAT-003 — runtime baseline]]
 
 ## In Progress
 

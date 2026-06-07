@@ -10,6 +10,7 @@ milestone: 001-bootstrap
 roadmap_cards:
   - 001-build-skeleton
   - 002-ci-pipeline
+  - 003-runtime-baseline
 sprints: []
 related_decisions:
   - ADR-0001 — testing stack
@@ -23,7 +24,7 @@ exits_with:
 
 # EPIC-001 — bootstrap
 
-Milestone: [[../01-milestones/001-bootstrap|MILESTONE-001]] (1:1). Features: [[../03-features/001-build-skeleton|FEAT-001]], [[../03-features/002-ci-pipeline|FEAT-002]].
+Milestone: [[../01-milestones/001-bootstrap|MILESTONE-001]] (1:1). Features: [[../03-features/001-build-skeleton|FEAT-001]], [[../03-features/002-ci-pipeline|FEAT-002]], [[../03-features/003-runtime-baseline|FEAT-003]].
 
 ## Why
 
@@ -67,3 +68,5 @@ Redis; CI runs build + test on every push/PR; the first release is tagged `v0.1.
 ## Progress log
 
 2026-06-05 — Planned.
+2026-06-06 — Activated; FEAT-001 build-skeleton started.
+2026-06-07 — FEAT-001 done (merged into epic). FEAT-003 runtime baseline (Jetty + Flyway, ADR-0004) planned.

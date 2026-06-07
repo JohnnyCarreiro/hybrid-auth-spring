@@ -41,7 +41,7 @@ checkout. No domain logic.
 ## Notes
 
 - Base package `com.johnnycarreiro.hybridauth`; ports `AUTH_PORT=3333` / `RESOURCE_PORT=3334` (env, per the backend convention).
-- Domain deps (JPA/Redis/Security) intentionally **not** added yet — the skeleton boots on `web`+`actuator` only, so it stays green without infra. They land with the auth features (datasources + Flyway come in [[004-runtime-baseline|FEAT-003]]).
+- Domain deps (JPA/Redis/Security) intentionally **not** added yet — the skeleton boots on `web`+`actuator` only, so it stays green without infra. They land with the auth features (datasources + Flyway come in [[003-runtime-baseline|FEAT-003]]).
 
 ## Retro
 

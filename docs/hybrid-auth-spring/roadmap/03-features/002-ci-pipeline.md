@@ -62,3 +62,14 @@ from Conventional Commits (playbook §16.2).
 - Branch protection applied on `dev`/`main` (PR-only; `main` no-bypass) — the `dev→main` release is now a PR; local commits in CI contexts use `--no-verify` (the human dev keeps the hooks).
 
 - Correction: local hooks are **plain POSIX `.githooks/`** (not lefthook) — see playbook-java §6; lefthook needs a global/npm/PATH binary and auto-syncs over custom wrappers.
+
+## Release automation (decided 2026-06-07 — wire with the v0.1.0 release)
+
+- **release-please** (GitHub Action) cuts releases from Conventional Commits: it maintains a "release PR"
+  that bumps the version + updates `CHANGELOG.md`; merging that PR creates the git tag + GitHub Release.
+  No Node in the repo (it's an Action).
+- **To wire:** `.github/workflows/release-please.yml`; `release-please-config.json` +
+  `.release-please-manifest.json` with `extra-files` bumping `version` in `build.gradle.kts` (or derive
+  the Gradle version from the tag). Decide which branch it watches given the `dev → main` release flow +
+  branch protection (likely `main`, with the release PR gated by CI).
+- **Not implemented yet** — this is the release mechanism; folds into the `v0.1.0` release step.

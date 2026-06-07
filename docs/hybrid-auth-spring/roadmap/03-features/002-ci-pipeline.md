@@ -81,3 +81,8 @@ from Conventional Commits (playbook §16.2).
   anti-recursion) — so the PR would never become mergeable. Fixed by opening it under a **fine-grained PAT**
   (`token: ${{ secrets.RELEASE_PLEASE_TOKEN }}`, Contents RW + Pull requests RW on this repo), so the
   checks run. **Follow-up:** migrate to a GitHub App token (no PAT expiry) — tracked in `open-questions.md`.
+- **Fixed 2026-06-07 (target + initial version):** first live run opened `chore(dev): release 1.0.0` — two bugs:
+  (1) `release-please-action`'s `target-branch` defaults to the repo **default branch (`dev`)**, ignoring the
+  `push: [main]` trigger → added **`target-branch: main`** to the workflow `with:`. (2) From the `0.0.0` seed
+  the first cut defaulted to `1.0.0` (`bump-minor-pre-major` governs *subsequent* 0.x bumps, not the initial
+  version) → added **`initial-version: "0.1.0"`** to the package. Together they yield `chore(main): release 0.1.0`.

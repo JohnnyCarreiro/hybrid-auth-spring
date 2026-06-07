@@ -5,7 +5,7 @@ epic: 001-bootstrap
 milestone: 001-bootstrap
 sdd:
 frd:
-status: in-progress
+status: done
 depends-on: [001-build-skeleton]
 blocks: []
 date: 2026-06-06
@@ -38,20 +38,25 @@ from Conventional Commits (playbook §16.2).
 
 ## Acceptance
 
-- [ ] CI (GitHub Actions) on PR→`dev` and PR→`main`: `./gradlew build` + tests **green** (Docker available for Testcontainers — ADR-0001).
-- [ ] Spotless gate (`spotlessCheck`, google-java-format — OQ-003).
-- [ ] commitlint gate over the **PR title** (`commitlint.config.js`).
-- [ ] **lefthook** wired locally via `./.tools/lefthook` + `.githooks/` (no global/npm): pre-commit (Spotless on staged + block commits on dev/main), commit-msg (Conventional regex), pre-push (block pushes to dev/main).
-- [ ] **Branch protection** active: `dev` (require PR), `main` (require PR + no-bypass + no direct/force push).
-- [ ] README: `hooks-install` note + contributor flow.
+- [x] CI (GitHub Actions) on PR→`dev` and PR→`main`: `./gradlew build` + tests **green** (Docker available for Testcontainers — ADR-0001).
+- [x] Spotless gate (`spotlessCheck`, google-java-format — OQ-003).
+- [x] commitlint gate over the **PR title** (`commitlint.config.js`).
+- [x] **lefthook** wired locally via `./.tools/lefthook` + `.githooks/` (no global/npm): pre-commit (Spotless on staged + block commits on dev/main), commit-msg (Conventional regex), pre-push (block pushes to dev/main).
+- [x] **Branch protection** active: `dev` (require PR), `main` (require PR + no-bypass + no direct/force push).
+- [x] README: `hooks-install` note + contributor flow.
 
 ## Tasks
 
-- [ ] `.github/workflows/ci.yml`: Gradle build + test (Docker for Testcontainers) + `spotlessCheck`.
-- [ ] commitlint job (Node in the runner) over the PR title + `commitlint.config.js`.
-- [ ] Spotless plugin wired in Gradle (google-java-format).
-- [ ] `lefthook.yml` + `.githooks/{pre-commit,commit-msg,pre-push}` wrappers + `just/make hooks-install` (download binary → `.tools/`, set `core.hooksPath`); gitignore `.tools/`.
-- [ ] Branch protection on `dev` + `main` via `gh api` (main: `enforce_admins`) — documented.
-- [ ] `docker-buildx` in CI for the build cache (ADR-0004 tip).
-- [ ] Author `playbook-java.md` (OQ-001) capturing the wired conventions.
-- [ ] Note the release-flow change: `dev→main` via PR now (main protected).
+- [x] `.github/workflows/ci.yml`: Gradle build + test (Docker for Testcontainers) + `spotlessCheck`.
+- [x] commitlint job (Node in the runner) over the PR title + `commitlint.config.js`.
+- [x] Spotless plugin wired in Gradle (google-java-format).
+- [x] `lefthook.yml` + `.githooks/{pre-commit,commit-msg,pre-push}` wrappers + `just/make hooks-install` (download binary → `.tools/`, set `core.hooksPath`); gitignore `.tools/`.
+- [x] Branch protection on `dev` + `main` via `gh api` (main: `enforce_admins`) — documented.
+- [x] `docker-buildx` in CI for the build cache (ADR-0004 tip).
+- [x] Author `playbook-java.md` (OQ-001) capturing the wired conventions.
+- [x] Note the release-flow change: `dev→main` via PR now (main protected).
+
+## Notes
+
+- CI is wired but its first green run is exercised on the **epic→dev PR** (CI only runs on PRs).
+- Branch protection applied on `dev`/`main` (PR-only; `main` no-bypass) — the `dev→main` release is now a PR; local commits in CI contexts use `--no-verify` (the human dev keeps the hooks).

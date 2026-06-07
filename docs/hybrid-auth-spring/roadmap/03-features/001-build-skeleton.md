@@ -25,7 +25,7 @@ checkout. No domain logic.
 
 - [x] `settings.gradle.kts` includes `auth-service`, `resource-service`, `shared` (Kotlin DSL).
 - [x] Both apps boot (`contextLoads` green) and `./gradlew build` is green across modules (verified via Dockerized `gradle:8.10.2-jdk21`).
-- [x] `docker-compose.yml` wires Postgres + Redis + both services (`docker compose config` valid). Full `compose up --build` smoke pending.
+- [x] `docker-compose.yml` wires Postgres (**isolated `auth` + `app` databases** via init script, ADR-0003) + Redis + both services (`docker compose config` valid). Full `compose up --build` smoke pending.
 
 ## Tasks
 

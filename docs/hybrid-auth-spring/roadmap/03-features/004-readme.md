@@ -5,7 +5,7 @@ epic: 001-bootstrap
 milestone: 001-bootstrap
 sdd:
 frd:
-status: in-progress
+status: done
 depends-on: [001-build-skeleton, 002-ci-pipeline, 003-runtime-baseline]
 blocks: []
 date: 2026-06-07
@@ -28,23 +28,23 @@ its terms before the `v0.1.0` cut.
 
 ## Acceptance
 
-- [ ] README opens with a one-line pitch, status callout (bootstrap), and badges (CI, Java 21, Spring Boot, MIT).
-- [ ] "How it works" section explains the hybrid model and renders an architecture diagram (Mermaid) of
+- [x] README opens with a one-line pitch, status callout (bootstrap), and badges (CI, Java 21, Spring Boot, MIT).
+- [x] "How it works" section explains the hybrid model and renders an architecture diagram (Mermaid) of
       auth-service issuing session + RS256 JWT, publishing JWKS, and resource-service verifying **locally, no shared secret**.
-- [ ] Security model highlights present: RS256 asymmetric signing, Argon2id passwords, refresh
+- [x] Security model highlights present: RS256 asymmetric signing, Argon2id passwords, refresh
       rotation + reuse-detection, JWKS, database-per-service isolation.
-- [ ] Quickstart (`just`/`make`) and the designed API surface are documented; domain routes clearly marked **planned**.
-- [ ] Design-docs section links SRS+SAD, ADRs, threat-model, playbook.
-- [ ] Capability roadmap shows bootstrap (done) → auth → resource → Phase 2, honestly scoped.
-- [ ] `LICENSE` (MIT, © 2026 Johnny Carreiro) committed; README License section points to it.
-- [ ] No broken intra-repo links; no claims of unbuilt behavior as done.
+- [x] Quickstart (`just`/`make`) and the designed API surface are documented; domain routes clearly marked **planned**.
+- [x] Design-docs section links SRS+SAD, ADRs, threat-model, playbook.
+- [x] Capability roadmap shows bootstrap (done) → auth → resource → Phase 2, honestly scoped.
+- [x] `LICENSE` (MIT, © 2026 Johnny Carreiro) committed; README License section points to it.
+- [x] No broken intra-repo links; no claims of unbuilt behavior as done.
 
 ## Tasks
 
-- [ ] Rewrite `README.md` to the portfolio front-page structure.
-- [ ] Author the Mermaid architecture diagram (GitHub-flavored).
-- [ ] Add `LICENSE` (MIT).
-- [ ] Cross-check badges (repo path `JohnnyCarreiro/hybrid-auth-spring`, `ci.yml`) and doc links resolve.
+- [x] Rewrite `README.md` to the portfolio front-page structure.
+- [x] Author the Mermaid architecture diagram (GitHub-flavored).
+- [x] Add `LICENSE` (MIT).
+- [x] Cross-check badges (repo path `JohnnyCarreiro/hybrid-auth-spring`, `ci.yml`) and doc links resolve.
 
 ## Out of scope
 
@@ -59,4 +59,12 @@ its terms before the `v0.1.0` cut.
 
 ## Retro
 
-_(to fill on close)_
+**Shipped:** portfolio-grade `README.md` (pitch · bootstrap status callout · "the problem it proves"
+trust-boundary framing · Mermaid architecture diagram · security-model highlights · quickstart · designed
+API surface marked *planned* · design-docs links · capability roadmap · contributing) + `MIT LICENSE`
+(© 2026 Johnny Carreiro). Badges: CI / Java 21 / Spring Boot 3.5 / MIT.
+**Verified:** all 13 intra-repo link targets resolve (auth-service, resource-service, LICENSE, ci.yml,
+SRS+SAD, ADR-0002/0003, threat-model, playbook, methodology, roadmap). Mermaid is GitHub-flavored
+`flowchart` (renders on github.com). No unbuilt behavior claimed as done — domain flows stay roadmap.
+**Punted:** committed diagram image, CONTRIBUTING.md, social-preview image (out of scope).
+**Note:** badge/diagram render only on GitHub once pushed; verified structurally here, not in a browser.

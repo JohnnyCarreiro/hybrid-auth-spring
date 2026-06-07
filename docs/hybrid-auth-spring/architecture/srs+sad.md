@@ -86,6 +86,41 @@ and an optional `shared` module for cross-cutting contracts. Each service owns a
 (`auth` and `app`) on a shared Postgres instance — no cross-database FK or query (ADR-0003); Redis is a
 cache / hot-path store for sessions. Everything runs locally via docker-compose.
 
+```mermaid
+flowchart TB
+    client(["Client (Insomnia / browser / app)"])
+
+    subgraph authsvc["auth-service — issuer"]
+        authapi["Spring Security 6<br/>sign-up · sign-in · /me<br/>RS256 JWT issuer · refresh rotation + reuse-detection"]
+        jwksep["GET /.well-known/jwks.json<br/>public keys (RFC 7517), cacheable"]
+        authapi -- "publishes public key(s)" --> jwksep
+    end
+
+    subgraph ressvc["resource-service — resource server"]
+        rsv["OAuth2 Resource Server<br/>jwk-set-uri → auth JWKS"]
+        resapi["Spring MVC<br/>projects · tasks (owner-scoped CRUD)"]
+        rsv --- resapi
+    end
+
+    subgraph pg["PostgreSQL — isolated DBs (ADR-0003)"]
+        authdb[("auth DB<br/>users · sessions(family_id) · jwks")]
+        appdb[("app DB<br/>users(mirror) · projects · tasks")]
+    end
+    redis[("Redis<br/>session hot-path / cache")]
+
+    client -- "sign-in / refresh / sign-out" --> authapi
+    authapi -- "RS256 access JWT + refresh" --> client
+    client -- "Bearer JWT" --> resapi
+    jwksep -. "fetch + cache public key (no per-request call)" .-> rsv
+    rsv -- "verify signature locally — NO shared secret" --> rsv
+
+    authapi --- authdb
+    authapi --- redis
+    resapi --- appdb
+```
+
+Repository layout:
+
 ```
 hybrid-auth-spring/
 ├── settings.gradle(.kts)        # includes the modules
@@ -135,6 +170,34 @@ Sign-in then protected access:
 5. (later) client → auth-service  POST /auth/token (refresh)
                            → rotate: new refresh (parent_id=old), stamp old.rotated_at
                            → reuse of a rotated/revoked token ⇒ revoke whole family (401)
+```
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor C as Client
+    participant A as auth-service
+    participant R as resource-service
+
+    Note over C,A: Sign-in
+    C->>A: POST /auth/sign-in (email, password)
+    A->>A: verify Argon2id hash → create session (refresh, family_id)<br/>mint RS256 JWT (active private key)
+    A-->>C: { accessToken (JWT), refreshToken }
+
+    Note over C,R: Protected access — no shared secret
+    C->>R: GET /projects · Authorization: Bearer <JWT>
+    R->>A: GET /.well-known/jwks.json (first call / cache miss)
+    A-->>R: public key set (JWKS)
+    R->>R: verify JWT signature locally + claims → authorize by ownership
+    R-->>C: 200 owner's projects
+
+    Note over C,A: Refresh rotation + reuse-detection
+    C->>A: POST /auth/token (refreshToken)
+    A->>A: rotate → new refresh (parent_id=old), stamp old.rotated_at
+    A-->>C: { new accessToken, new refreshToken }
+    C->>A: POST /auth/token (rotated / revoked token)
+    A->>A: reuse detected → revoke whole family
+    A-->>C: 401 (family revoked)
 ```
 
 The resource-service never calls the auth-service per request — it verifies locally with the cached

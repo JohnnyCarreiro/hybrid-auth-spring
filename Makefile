@@ -8,29 +8,29 @@ GRADLE := docker run --rm --user $(shell id -u):$(shell id -g) -e HOME=/tmp \
 COMPOSE := docker compose
 
 .DEFAULT_GOAL := help
-.PHONY: help docker-build docker-test docker-clean docker-up docker-up-infra \
+.PHONY: help docker-build docker-clean docker-up docker-up-infra \
 	docker-run docker-run-auth docker-run-resource docker-down docker-down-v \
 	docker-logs docker-ps docker-psql-auth docker-psql-app dev-run dev-auth dev-resource \
-	health fmt check
+	test health fmt check
 
 help: ## List available targets
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | \
 		awk 'BEGIN{FS=":.*?## "}{printf "  \033[36m%-20s\033[0m %s\n", $$1, $$2}'
 
-docker-build: ## Compile + test all modules (Dockerized Gradle)
-	$(GRADLE) build
-
-docker-test: ## Run tests only (Dockerized Gradle)
-	$(GRADLE) test
+docker-build: ## Compile + package the bootJars (Dockerized; no tests — see `test`)
+	$(GRADLE) assemble
 
 docker-clean: ## Gradle clean (Dockerized)
 	$(GRADLE) clean
 
+test: ## Run the full test suite on the HOST (Testcontainers spins its own DBs; needs JDK 21 + Docker)
+	./gradlew test
+
 docker-up: ## Build + start the FULL stack (Postgres, Redis, both services), detached
 	$(COMPOSE) up -d --build
 
-docker-up-infra: ## Start only Postgres + Redis, detached
-	$(COMPOSE) up -d postgres redis
+docker-up-infra: ## Start only Postgres + Redis (waits until healthy)
+	$(COMPOSE) up -d --wait postgres redis
 
 docker-run: ## Run BOTH services in the foreground (brings up their deps)
 	$(COMPOSE) up --build auth-service resource-service
@@ -41,13 +41,13 @@ docker-run-auth: ## Run only auth-service in the foreground (brings up its deps)
 docker-run-resource: ## Run only resource-service in the foreground (brings up its deps)
 	$(COMPOSE) up --build resource-service
 
-dev-run: ## Run BOTH services on the HOST via bootRun, in parallel (needs JDK 21)
+dev-run: docker-up-infra ## Run BOTH services on the HOST via bootRun, in parallel (needs JDK 21)
 	./gradlew --parallel :auth-service:bootRun :resource-service:bootRun
 
-dev-auth: ## Run auth-service on the HOST via bootRun — fast loop, hot reload (needs JDK 21)
+dev-auth: docker-up-infra ## Run auth-service on the HOST via bootRun — fast loop, hot reload (needs JDK 21)
 	./gradlew :auth-service:bootRun
 
-dev-resource: ## Run resource-service on the HOST via bootRun — fast loop, hot reload (needs JDK 21)
+dev-resource: docker-up-infra ## Run resource-service on the HOST via bootRun — fast loop, hot reload (needs JDK 21)
 	./gradlew :resource-service:bootRun
 
 docker-down: ## Stop the stack

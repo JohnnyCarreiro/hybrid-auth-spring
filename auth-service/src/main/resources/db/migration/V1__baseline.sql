@@ -1,0 +1,3 @@
+-- Baseline for the auth database (ADR-0003 / ADR-0004).
+-- Establishes the Flyway pipeline; domain tables (users, sessions, jwks)
+-- arrive with their features (sign-up, etc.). No schema objects yet.

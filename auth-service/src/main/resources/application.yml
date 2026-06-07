@@ -1,6 +1,16 @@
 spring:
   application:
     name: auth-service
+  datasource:
+    url: ${AUTH_DATASOURCE_URL:jdbc:postgresql://localhost:5432/auth}
+    username: ${AUTH_DATASOURCE_USERNAME:auth_user}
+    password: ${AUTH_DATASOURCE_PASSWORD:auth}
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+  flyway:
+    enabled: true
 
 server:
   port: ${AUTH_PORT:3333}

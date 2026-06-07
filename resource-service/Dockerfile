@@ -2,7 +2,11 @@
 FROM gradle:8.10.2-jdk21 AS build
 WORKDIR /workspace
 COPY . .
-RUN --mount=type=cache,target=/home/gradle/.gradle gradle :resource-service:bootJar --no-daemon
+# CI tip: with docker-buildx (BuildKit), prepend
+#   --mount=type=cache,target=/home/gradle/.gradle
+# to the RUN to cache dependencies between image builds. Left off here so the
+# image builds with the legacy builder too (no buildx required locally).
+RUN gradle :resource-service:bootJar --no-daemon
 
 FROM eclipse-temurin:21-jre
 RUN apt-get update \

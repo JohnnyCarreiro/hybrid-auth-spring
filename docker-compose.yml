@@ -39,6 +39,12 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:3333/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+      start_period: 30s
 
   resource-service:
     build:
@@ -48,11 +54,21 @@ services:
       RESOURCE_PORT: 3334
     ports:
       - "3334:3334"
+    # Starts only after auth-service is healthy — it verifies JWTs against the
+    # auth-service JWKS, so auth must be up first (ADR-0002).
     depends_on:
       postgres:
         condition: service_healthy
       redis:
         condition: service_healthy
+      auth-service:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:3334/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+      start_period: 30s
 
 volumes:
   pgdata:

@@ -1,0 +1,24 @@
+spring:
+  application:
+    name: resource-service
+  datasource:
+    url: ${APP_DATASOURCE_URL:jdbc:postgresql://localhost:5432/app}
+    username: ${APP_DATASOURCE_USERNAME:app_user}
+    password: ${APP_DATASOURCE_PASSWORD:app}
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+  flyway:
+    enabled: true
+
+server:
+  port: ${RESOURCE_PORT:3334}
+
+# Liveness at GET /health (actuator remapped to the root base-path).
+management:
+  endpoints:
+    web:
+      base-path: /
+      exposure:
+        include: health

@@ -6,8 +6,7 @@ kanban-plugin: board
 
 ## Initial
 
-- [ ] [[../03-features/001-build-skeleton|FEAT-001 — build skeleton]]
-- [ ] [[../03-features/002-ci-pipeline|FEAT-002 — ci pipeline]]
+
 
 ## In Progress
 
@@ -16,6 +15,10 @@ kanban-plugin: board
 ## Done
 
 - [x] [[../03-features/000-docs-foundation|FEAT-000 — docs foundation]]
+- [x] [[../03-features/001-build-skeleton|FEAT-001 — build skeleton]]
+- [x] [[../03-features/003-runtime-baseline|FEAT-003 — runtime baseline]]
+- [x] [[../03-features/002-ci-pipeline|FEAT-002 — ci pipeline]]
+- [x] [[../03-features/004-readme|FEAT-004 — project README]]
 
 
 %% kanban:settings

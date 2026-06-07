@@ -6,11 +6,11 @@ kanban-plugin: board
 
 ## Planned
 
-- [ ] [[../02-epics/001-bootstrap|EPIC-001 — bootstrap]]
+
 
 ## Active
 
-
+- [ ] [[../02-epics/001-bootstrap|EPIC-001 — bootstrap]]
 
 ## Done
 

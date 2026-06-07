@@ -6,11 +6,11 @@ kanban-plugin: board
 
 ## Planned
 
-- [ ] [[../01-milestones/001-bootstrap|MILESTONE-001 — bootstrap]]
+
 
 ## Active
 
-
+- [ ] [[../01-milestones/001-bootstrap|MILESTONE-001 — bootstrap]]
 
 ## Done
 

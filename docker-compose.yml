@@ -32,6 +32,9 @@ services:
       dockerfile: auth-service/Dockerfile
     environment:
       AUTH_PORT: 3333
+      AUTH_DATASOURCE_URL: jdbc:postgresql://postgres:5432/auth
+      AUTH_DATASOURCE_USERNAME: auth_user
+      AUTH_DATASOURCE_PASSWORD: auth
     ports:
       - "3333:3333"
     depends_on:
@@ -52,6 +55,9 @@ services:
       dockerfile: resource-service/Dockerfile
     environment:
       RESOURCE_PORT: 3334
+      APP_DATASOURCE_URL: jdbc:postgresql://postgres:5432/app
+      APP_DATASOURCE_USERNAME: app_user
+      APP_DATASOURCE_PASSWORD: app
     ports:
       - "3334:3334"
     # Starts only after auth-service is healthy — it verifies JWTs against the

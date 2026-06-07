@@ -5,7 +5,7 @@ epic: 001-bootstrap
 milestone: 001-bootstrap
 sdd:
 frd:
-status: in-progress
+status: done
 depends-on: [001-build-skeleton]
 blocks: []
 date: 2026-06-07

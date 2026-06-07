@@ -10,11 +10,12 @@ kanban-plugin: board
 
 ## Active
 
-- [ ] [[../02-epics/001-bootstrap|EPIC-001 — bootstrap]]
+- [ ] [[../02-epics/002-auth|EPIC-002 — auth]]
 
 ## Done
 
 - [x] [[../02-epics/000-scaffold|EPIC-000 — scaffold]]
+- [x] [[../02-epics/001-bootstrap|EPIC-001 — bootstrap]]
 
 ## Parked
 

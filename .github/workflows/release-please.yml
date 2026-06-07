@@ -1,0 +1,25 @@
+name: release-please
+
+# Cuts releases from Conventional Commits. On every push to `main` (the
+# `dev -> main` release merge), release-please maintains a release PR that bumps
+# the version + updates CHANGELOG.md; merging that PR creates the git tag and the
+# GitHub Release. Pre-1.0: seeded at 0.0.0 with bump-minor-pre-major, so the first
+# `feat:` cut lands as v0.1.0. See docs/.../roadmap/03-features/002-ci-pipeline.md.
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  release-please:
+    name: release-please
+    runs-on: ubuntu-latest
+    steps:
+      - uses: googleapis/release-please-action@v4
+        with:
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json

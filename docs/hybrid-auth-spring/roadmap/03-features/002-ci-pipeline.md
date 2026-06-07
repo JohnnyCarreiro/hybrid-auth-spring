@@ -68,8 +68,15 @@ from Conventional Commits (playbook §16.2).
 - **release-please** (GitHub Action) cuts releases from Conventional Commits: it maintains a "release PR"
   that bumps the version + updates `CHANGELOG.md`; merging that PR creates the git tag + GitHub Release.
   No Node in the repo (it's an Action).
-- **To wire:** `.github/workflows/release-please.yml`; `release-please-config.json` +
-  `.release-please-manifest.json` with `extra-files` bumping `version` in `build.gradle.kts` (or derive
-  the Gradle version from the tag). Decide which branch it watches given the `dev → main` release flow +
-  branch protection (likely `main`, with the release PR gated by CI).
-- **Not implemented yet** — this is the release mechanism; folds into the `v0.1.0` release step.
+- **Wired 2026-06-07** — watches `main` (the `dev → main` release merge):
+  - `.github/workflows/release-please.yml` — `googleapis/release-please-action@v4`, `push` on `main`,
+    `contents: write` + `pull-requests: write`.
+  - `release-please-config.json` — `release-type: simple`, `bump-minor-pre-major: true`,
+    `bump-patch-for-minor-pre-major: false`; `extra-files` generic updater on `build.gradle.kts`.
+  - `.release-please-manifest.json` — seeded root package `.` at `0.0.0` so the first `feat:` cut is **v0.1.0**.
+  - `build.gradle.kts` version line annotated `// x-release-please-version` (now `0.0.0`, no `-SNAPSHOT`;
+    the release PR rewrites it). `simple` won't create a stray `version.txt` (`createIfMissing: false`).
+- **Open (defer to the v0.1.0 step):** the release PR is opened by the default `GITHUB_TOKEN`, so it does
+  **not** trigger the `build`/`commit-convention` checks that `main`'s branch protection requires — the PR
+  can't be merged until those pass. Resolve at release time by either (a) a PAT in `token:`, or (b)
+  temporarily relaxing the required checks on `main` for the release PR. Not solved now (no PRs yet).

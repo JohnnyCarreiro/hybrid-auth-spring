@@ -1,0 +1,14 @@
+spring:
+  application:
+    name: resource-service
+
+server:
+  port: ${RESOURCE_PORT:3334}
+
+# Liveness at GET /health (actuator remapped to the root base-path).
+management:
+  endpoints:
+    web:
+      base-path: /
+      exposure:
+        include: health

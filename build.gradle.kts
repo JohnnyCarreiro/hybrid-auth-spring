@@ -5,7 +5,7 @@ plugins {
 
 allprojects {
     group = "com.johnnycarreiro.hybridauth"
-    version = "0.0.0" // x-release-please-version
+    version = "0.1.0" // x-release-please-version
 
     repositories {
         mavenCentral()

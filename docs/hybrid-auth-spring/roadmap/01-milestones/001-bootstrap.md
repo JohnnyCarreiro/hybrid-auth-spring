@@ -3,7 +3,7 @@ id: MILESTONE-001
 slug: bootstrap
 title: Bootstrap
 window: 2026-06
-status: planned
+status: active
 date: 2026-06-05
 ---
 

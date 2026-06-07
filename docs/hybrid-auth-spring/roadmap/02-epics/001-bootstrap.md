@@ -2,7 +2,7 @@
 id: EPIC-001
 slug: bootstrap
 type: infra
-status: planned
+status: active
 owner: Johnny Carreiro
 sdd:
 target_window: 2026-06

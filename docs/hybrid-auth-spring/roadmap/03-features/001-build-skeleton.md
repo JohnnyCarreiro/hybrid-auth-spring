@@ -5,7 +5,7 @@ epic: 001-bootstrap
 milestone: 001-bootstrap
 sdd:
 frd:
-status: planned
+status: in-progress
 depends-on: []
 blocks: [002-ci-pipeline]
 date: 2026-06-06

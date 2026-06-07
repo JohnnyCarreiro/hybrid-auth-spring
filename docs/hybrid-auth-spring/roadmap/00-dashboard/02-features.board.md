@@ -10,11 +10,12 @@ kanban-plugin: board
 
 ## In Progress
 
-- [ ] [[../03-features/001-build-skeleton|FEAT-001 — build skeleton]]
+
 
 ## Done
 
 - [x] [[../03-features/000-docs-foundation|FEAT-000 — docs foundation]]
+- [x] [[../03-features/001-build-skeleton|FEAT-001 — build skeleton]]
 
 
 %% kanban:settings

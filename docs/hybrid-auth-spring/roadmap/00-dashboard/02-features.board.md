@@ -10,7 +10,7 @@ kanban-plugin: board
 
 ## In Progress
 
-
+- [ ] [[../03-features/004-readme|FEAT-004 — project README]]
 
 ## Done
 

@@ -4,17 +4,6 @@ Running list of things we haven't decided. Keep entries dated. Move to ADRs when
 
 ## Active
 
-### OQ-005 — UUID v7 generator (2026-06-05)
-
-`users`/`sessions`/`jwks` ids are UUID v7 (time-ordered — better index locality, mirrors the reference
-design). The JDK has no built-in v7 generator.
-
-Options:
-- (a) A dedicated library (e.g. `uuid-creator`) — explicit, isolated from the ORM.
-- (b) Hibernate 6.5 `@UuidGenerator` — no extra dependency, but couples id generation to the ORM.
-
-Leaning (a). Decide while building F1 (sign-up) — see `architecture/sdds/sdd-auth.md` §8.
-
 ### OQ-006 — release-please auth: PAT → GitHub App (2026-06-07)
 
 The release PR must run `main`'s required checks, so it is opened under a **fine-grained PAT**
@@ -34,3 +23,4 @@ swap `token:` from the PAT secret to the app-token step output. Not urgent — t
 - [x] Java playbook (OQ-001) authored — `architecture/playbook/playbook-java.md`, 2026-06-07 (FEAT-002).
 - [x] CI (OQ-002) = GitHub Actions Gradle build+test (Testcontainers) + `spotlessCheck`; commit convention via commitlint on the PR title — 2026-06-07 (FEAT-002).
 - [x] Lint/format (OQ-003) = Spotless + google-java-format — 2026-06-07 (FEAT-002).
+- [x] UUID v7 generator (OQ-005) = option (a), the `uuid-creator` library, generated in the domain (the aggregate stamps its own id via `support/IdMint` — never the ORM) — 2026-06-07 (FEAT-005).

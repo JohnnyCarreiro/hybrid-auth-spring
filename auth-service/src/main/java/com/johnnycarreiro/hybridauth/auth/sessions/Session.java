@@ -21,11 +21,10 @@ import java.util.UUID;
  * pointing back via {@code parentId}. Presenting a refresh whose {@code rotatedAt} or {@code
  * revokedAt} is already set is reuse, and kills the whole family (invariant 2).
  *
- * <p><b>This feature (F3) only opens roots.</b> The rotation/revocation mutators that stamp {@code
- * rotatedAt} / {@code revokedAt} are intentionally <em>not</em> implemented here — F5 (rotation)
- * and F6 (sign-out) will add {@code rotate(...)} / {@code revoke(...)} mutators next to the rule
- * they enforce. The fields and read accessors exist now so those features extend the aggregate
- * cleanly without touching the schema.
+ * <p><b>Lifecycle mutators, each next to the rule it enforces.</b> A login opens a root via {@link
+ * #openRoot}; a refresh exchange chains a child with {@link #rotateChild} and spends the presented
+ * session with {@link #rotate} (F5); sign-out ends a session with {@link #revoke} (F6). Family-wide
+ * revocation on reuse is a bulk store operation, not an aggregate method (it spans many rows).
  *
  * <p>Like every aggregate in this domain it stamps its own UUID v7 identity via {@link IdMint}
  * rather than delegating to the ORM, is born consistent through a static factory ({@link
@@ -193,6 +192,21 @@ public class Session {
     }
     this.rotatedAt = now;
     this.updatedAt = now;
+  }
+
+  /**
+   * Revoke this session at {@code now} (SDD-001 §3 {@code signOut}): a later rotate on it fails
+   * with {@code SESSION_REVOKED}. Sign-out revokes only the <em>presented</em> session, never the
+   * family (SDD-001 §4 — that family-wide kill is reserved for reuse-detection). Idempotent:
+   * revoking an already-revoked session keeps the original {@code revokedAt}, so a double sign-out
+   * is harmless.
+   */
+  public void revoke(Instant now) {
+    Objects.requireNonNull(now, "now");
+    if (revokedAt == null) {
+      this.revokedAt = now;
+      this.updatedAt = now;
+    }
   }
 
   /** Whether this session's window has closed at {@code now}. */

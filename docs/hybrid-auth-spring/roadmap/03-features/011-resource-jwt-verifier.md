@@ -5,10 +5,11 @@ epic: 003-resource
 milestone: 003-resource
 sdd: SDD-002
 frd: F1
-status: in progress
+status: done
 depends-on: [006-auth-jwks]
 blocks: [012-resource-user-mirror, 013-resource-projects-crud, 014-resource-tasks-crud]
 date: 2026-06-08
+closed: 2026-06-08
 ---
 
 # FEAT-011 — resource JWT verifier (F1) ★

@@ -3,7 +3,7 @@ id: MILESTONE-003
 slug: resource
 title: Resource
 window: 2026-06
-status: active
+status: done
 date: 2026-06-08
 ---
 
@@ -27,6 +27,6 @@ unit test against an in-JVM JWKS stub.
 
 ## Exit
 
-- [ ] SDD-002 §8 F1–F4 acceptance met (verifier · mirror · projects CRUD · tasks CRUD).
-- [ ] Resource-critical flows covered by integration tests (Testcontainers, ADR-0001).
-- [ ] Released: `dev → main` tagged `v0.3.0` (playbook §16.4 / §5).
+- [x] SDD-002 §8 F1–F4 acceptance met (verifier · mirror · projects CRUD · tasks CRUD).
+- [x] Resource-critical flows covered by integration tests (Testcontainers, ADR-0001).
+- [x] Released: `dev → main` tagged `v0.3.0` (playbook §16.4 / §5).

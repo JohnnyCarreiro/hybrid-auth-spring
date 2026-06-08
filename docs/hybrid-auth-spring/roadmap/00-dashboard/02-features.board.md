@@ -6,7 +6,6 @@ kanban-plugin: board
 
 ## Initial
 
-- [ ] [[../03-features/006-auth-jwks|FEAT-006 — JWKS + signing keys (F2)]]
 - [ ] [[../03-features/007-auth-signin|FEAT-007 — sign-in (F3)]]
 - [ ] [[../03-features/008-auth-me|FEAT-008 — /me (F4)]]
 - [ ] [[../03-features/009-auth-refresh-rotation|FEAT-009 — refresh rotation + reuse ★ (F5)]]
@@ -18,6 +17,7 @@ kanban-plugin: board
 
 ## Done
 
+- [x] [[../03-features/006-auth-jwks|FEAT-006 — JWKS + signing keys (F2)]]
 - [x] [[../03-features/005-auth-signup|FEAT-005 — auth sign-up (F1)]]
 - [x] [[../03-features/000-docs-foundation|FEAT-000 — docs foundation]]
 - [x] [[../03-features/001-build-skeleton|FEAT-001 — build skeleton]]

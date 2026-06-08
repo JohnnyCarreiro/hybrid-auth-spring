@@ -2,7 +2,7 @@
 id: EPIC-002
 slug: auth
 type: capability
-status: active
+status: done
 owner: Johnny Carreiro
 sdd: SDD-001
 target_window: 2026-06
@@ -60,8 +60,8 @@ the private key never leaves it.
 
 - [x] F1 sign-up · F2 JWKS/keys · F3 sign-in · F4 `/me` · F5 rotation+reuse ★ · F6 sign-out — all SDD §8 acceptance met.
 - [x] Auth-critical flows covered by Testcontainers integration tests (ADR-0001).
-- [x] `feat/<NNN> → epic/002-auth` merges done (six features); **epic → `dev` PR pending human validation** (§16.3).
-- [ ] Released: `dev → main` tagged `v0.2.0`.
+- [x] `feat/<NNN> → epic/002-auth` merges done (six features); epic squash-merged to `dev` via PR #9 (§16.3).
+- [x] Released: `dev → main` tagged `v0.2.0`.
 
 ## Related decisions
 

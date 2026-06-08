@@ -11,11 +11,11 @@
 > secret**.
 
 > [!NOTE]
-> **Status: bootstrap.** The Gradle multi-module skeleton, per-service isolated databases, the
-> runtime baseline (Jetty + Flyway), and CI are in place and reproducible from a clean checkout. The
-> auth flows (sign-up/sign-in, refresh rotation + reuse-detection, JWKS) and the projects/tasks domain
-> are **designed and on the roadmap** — see [Roadmap](#roadmap). Nothing below is claimed as shipped
-> unless it is in the **Done** column.
+> **Status: auth shipped (`v0.2.0`).** The full auth-service flow — sign-up, sign-in, `/me`, refresh
+> rotation + reuse-detection, sign-out, and JWKS — is implemented and covered by Testcontainers
+> integration tests. The **projects/tasks** domain (resource-service) is the next epic — see
+> [Roadmap](#roadmap). The diagrams below describe the designed system; each route table marks what is
+> shipped vs planned.
 
 ## The problem it proves
 
@@ -178,10 +178,10 @@ just dev-auth           # one at a time: dev-auth / dev-resource
 
 ## API surface
 
-The designed surface (from the [SRS+SAD](docs/hybrid-auth-spring/architecture/srs+sad.md) §1.4).
-Domain routes are **planned** — they land in the capability epics, not bootstrap.
+The [SRS+SAD](docs/hybrid-auth-spring/architecture/srs+sad.md) §1.4 surface. The **auth-service routes
+are shipped** (`v0.2.0`); the **resource-service** routes are **planned** (next epic).
 
-**auth-service**
+**auth-service** — shipped
 
 | Route | Purpose |
 |-------|---------|
@@ -218,7 +218,7 @@ Capability-first; milestone = release tag. Tracked under
 | Stage | Scope | Status |
 |-------|-------|--------|
 | **Bootstrap** (EPIC-001) | Multi-module skeleton, isolated DBs, Jetty + Flyway runtime, CI + format gate | ✅ done → cuts `v0.1.0` |
-| **Auth** | Sign-up/in, RS256 issuance, sessions, refresh rotation + reuse-detection, JWKS | ⏳ planned |
+| **Auth** (EPIC-002) | Sign-up/in, RS256 issuance, sessions, refresh rotation + reuse-detection, JWKS | ✅ done → cuts `v0.2.0` |
 | **Resource** | Projects/tasks CRUD, JWT validation via JWKS, ownership authorization | ⏳ planned |
 | **Phase 2** | OAuth/social login, RBAC, rate limiting, JWKS rotation with grace window, optional frontend | 🅿️ deferred |
 

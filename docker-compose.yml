@@ -35,6 +35,10 @@ services:
       AUTH_DATASOURCE_URL: jdbc:postgresql://postgres:5432/auth
       AUTH_DATASOURCE_USERNAME: auth_user
       AUTH_DATASOURCE_PASSWORD: auth
+      # JWKS private-key seal (AES-256-GCM). Required — the auth-service fails fast without it
+      # (PrivateKeyCipher / SDD-001 §4 invariant 6). Supplied from .env (git-ignored); never hardcode
+      # a real key here. Generate one with `openssl rand -base64 32`.
+      AUTH_JWKS_ENC_KEY: ${AUTH_JWKS_ENC_KEY:?set AUTH_JWKS_ENC_KEY in .env — e.g. openssl rand -base64 32}
     ports:
       - "3333:3333"
     depends_on:

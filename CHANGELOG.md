@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.0](https://github.com/JohnnyCarreiro/hybrid-auth-spring/compare/v0.1.0...v0.2.0) (2026-06-08)
+
+
+### Features
+
+* **auth:** hybrid authentication (sign-up, JWKS, sign-in, /me, rotation+reuse, sign-out) ([#9](https://github.com/JohnnyCarreiro/hybrid-auth-spring/issues/9)) ([496b089](https://github.com/JohnnyCarreiro/hybrid-auth-spring/commit/496b089e2cb56621e87db7aad0f372075b86f395))
+
 ## 0.1.0 (2026-06-07)
 
 

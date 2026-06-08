@@ -19,6 +19,8 @@ ADRs capture decisions that have lasting structural consequences. Short, dated, 
 | [0004](0004-runtime-baseline-jetty-flyway.md) | Runtime baseline: Jetty embedded server + Flyway migrations | Accepted | 1 |
 | [0005](0005-resource-server-jwks-verifier.md) | Resource-server token verification: a hand-built JWKS verifier | Accepted | 3 |
 | [0006](0006-user-identity-sync.md) | User identity sync: create-only mirror, deferred event-based updates | Accepted | 3 |
+| [0007](0007-identity-mirror-sync-events.md) | Identity-mirror sync: provision-before-authz + event-driven updates | Accepted | 3 |
+| [0008](0008-deferred-operational-surface.md) | Deferred production surface: OpenAPI/Swagger, observability, automated E2E | Accepted | 3 |
 
 ## Template
 

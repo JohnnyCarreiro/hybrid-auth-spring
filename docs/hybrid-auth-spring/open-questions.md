@@ -4,21 +4,6 @@ Running list of things we haven't decided. Keep entries dated. Move to ADRs when
 
 ## Active
 
-### OQ-007 — identity update propagation: event vs callback (2026-06-08)
-
-The `app.users` mirror is **create-only** at this tier (ADR-0006): provisioned JIT on first sight,
-never updated from a later token. Propagating auth-side identity changes (email/name) is deferred. The
-**recommended** path is an auth-emitted `user.updated` event the resource-service consumes; an outbound
-callback from auth is the **less-favoured** alternative (couples the issuer to its consumers). Decide
-the transport (and whether an outbox is warranted) when a second consumer or a real freshness
-requirement appears. Tracked against SDD-002 §8 F-sync.
-
-### OQ-008 — OpenAPI/Swagger UI not yet wired (2026-06-08)
-
-REQ-012 (both services publish Swagger UI in the dev profile) is still `planned` — neither service has a
-springdoc dependency. Add `springdoc-openapi` to both when the dev route-inspection surface is
-prioritized; out of scope for the auth and resource MVP epics.
-
 ### OQ-006 — release-please auth: PAT → GitHub App (2026-06-07)
 
 The release PR must run `main`'s required checks, so it is opened under a **fine-grained PAT**
@@ -39,3 +24,6 @@ swap `token:` from the PAT secret to the app-token step output. Not urgent — t
 - [x] CI (OQ-002) = GitHub Actions Gradle build+test (Testcontainers) + `spotlessCheck`; commit convention via commitlint on the PR title — 2026-06-07 (FEAT-002).
 - [x] Lint/format (OQ-003) = Spotless + google-java-format — 2026-06-07 (FEAT-002).
 - [x] UUID v7 generator (OQ-005) = option (a), the `uuid-creator` library, generated in the domain (the aggregate stamps its own id via `support/IdMint` — never the ORM) — 2026-06-07 (FEAT-005).
+- [x] Resource-server verification = a **hand-built** singleton JWKS verifier wired into Spring's resource-server chain, **refining** the earlier "via `jwk-set-uri`" decision (for showcase symmetry with the hand-built issuer) — `adrs/0005-resource-server-jwks-verifier.md`, 2026-06-08 (FEAT-011).
+- [x] Identity update propagation (OQ-007) = **event-driven** (auth emits `user.created`/`user.updated`; resource consumes), preferred over a callback; provisioning runs before authz (self-keyed identity cache). Direction decided; **implementation deferred** (create-only at MVP) — `adrs/0006-user-identity-sync.md` + `adrs/0007-identity-mirror-sync-events.md`, 2026-06-08.
+- [x] OpenAPI/Swagger UI + observability + automated E2E (OQ-008) = **deferred** for the showcase; a real deployment would carry all three. Stand-in: hand-written API reference in the README — `adrs/0008-deferred-operational-surface.md`, 2026-06-08.

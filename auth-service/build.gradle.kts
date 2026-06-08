@@ -32,6 +32,12 @@ dependencies {
     // verifies against the published public JWKS (no shared secret — SDD-001 §4 invariant 6).
     implementation("org.springframework.security:spring-security-oauth2-jose")
 
+    // F4 (/me): the auth-service is its own resource server for its protected routes. This starter
+    // brings spring-security-web (the filter chain) + the JWT resource-server support. The Jwt is
+    // verified locally against the in-process public keys (active + grace) — no HTTP round-trip to
+    // itself, no shared secret (SDD-001 §6).
+    implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
+
     // Password hashing: Argon2id (ADR-0002) via spring-security-crypto; BouncyCastle backs Argon2.
     implementation("org.springframework.security:spring-security-crypto")
     // BouncyCastle backs Argon2id; not managed by the Spring Boot BOM, so the version is explicit.

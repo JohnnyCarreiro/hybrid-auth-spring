@@ -24,6 +24,11 @@ build/
 *.iml
 .vscode/
 .DS_Store
+# Eclipse / Eclipse JDT language server (jdtls) generated metadata
+.classpath
+.project
+.settings/
+bin/
 
 # --- Local tooling (project-local binaries) ---
 .tools/

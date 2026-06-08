@@ -10,7 +10,7 @@ kanban-plugin: board
 
 ## Active
 
-
+- [ ] [[../02-epics/003-resource|EPIC-003 — resource]]
 
 ## Done
 

@@ -10,7 +10,10 @@ kanban-plugin: board
 
 ## In Progress
 
-
+- [ ] [[../03-features/014-resource-tasks-crud|FEAT-014 — tasks CRUD (F4)]]
+- [ ] [[../03-features/013-resource-projects-crud|FEAT-013 — projects CRUD (F3)]]
+- [ ] [[../03-features/012-resource-user-mirror|FEAT-012 — identity mirror (F2)]]
+- [ ] [[../03-features/011-resource-jwt-verifier|FEAT-011 — JWT verifier ★ (F1)]]
 
 ## Done
 

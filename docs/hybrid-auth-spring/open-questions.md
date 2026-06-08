@@ -4,6 +4,21 @@ Running list of things we haven't decided. Keep entries dated. Move to ADRs when
 
 ## Active
 
+### OQ-007 — identity update propagation: event vs callback (2026-06-08)
+
+The `app.users` mirror is **create-only** at this tier (ADR-0006): provisioned JIT on first sight,
+never updated from a later token. Propagating auth-side identity changes (email/name) is deferred. The
+**recommended** path is an auth-emitted `user.updated` event the resource-service consumes; an outbound
+callback from auth is the **less-favoured** alternative (couples the issuer to its consumers). Decide
+the transport (and whether an outbox is warranted) when a second consumer or a real freshness
+requirement appears. Tracked against SDD-002 §8 F-sync.
+
+### OQ-008 — OpenAPI/Swagger UI not yet wired (2026-06-08)
+
+REQ-012 (both services publish Swagger UI in the dev profile) is still `planned` — neither service has a
+springdoc dependency. Add `springdoc-openapi` to both when the dev route-inspection surface is
+prioritized; out of scope for the auth and resource MVP epics.
+
 ### OQ-006 — release-please auth: PAT → GitHub App (2026-06-07)
 
 The release PR must run `main`'s required checks, so it is opened under a **fine-grained PAT**

@@ -58,6 +58,8 @@ services:
       APP_DATASOURCE_URL: jdbc:postgresql://postgres:5432/app
       APP_DATASOURCE_USERNAME: app_user
       APP_DATASOURCE_PASSWORD: app
+      # Verify access tokens against the auth-service JWKS over the compose network (ADR-0005).
+      RESOURCE_AUTH_JWKS_URI: http://auth-service:3333/.well-known/jwks.json
     ports:
       - "3334:3334"
     # Starts only after auth-service is healthy — it verifies JWTs against the

@@ -10,7 +10,7 @@ kanban-plugin: board
 
 ## Active
 
-
+- [ ] [[../01-milestones/003-resource|MILESTONE-003 — resource]]
 
 ## Done
 

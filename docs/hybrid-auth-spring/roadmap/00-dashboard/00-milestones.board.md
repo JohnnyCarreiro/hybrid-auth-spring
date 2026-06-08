@@ -10,11 +10,13 @@ kanban-plugin: board
 
 ## Active
 
-- [ ] [[../01-milestones/001-bootstrap|MILESTONE-001 — bootstrap]]
+
 
 ## Done
 
+- [x] [[../01-milestones/002-auth|MILESTONE-002 — auth]]
 - [x] [[../01-milestones/000-scaffold|MILESTONE-000 — scaffold]]
+- [x] [[../01-milestones/001-bootstrap|MILESTONE-001 — bootstrap]]
 
 
 %% kanban:settings

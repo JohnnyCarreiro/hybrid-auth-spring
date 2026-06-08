@@ -12,6 +12,13 @@ spring:
   flyway:
     enabled: true
 
+# Auth domain config. The JWKS data-encryption key seals signing-key private material at rest
+# (AES-256-GCM): a base64-encoded 32-byte secret, supplied via env, never committed (SDD-001 §4
+# invariant 6). No default — the service must be told its key.
+auth:
+  jwks:
+    encryption-key: ${AUTH_JWKS_ENC_KEY:}
+
 server:
   port: ${AUTH_PORT:3333}
 

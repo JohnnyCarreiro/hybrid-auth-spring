@@ -165,6 +165,10 @@ revokes.
 One block per functionality: intent · acceptance · validation · Tasks (1–2 day units). At medium+ each
 splits into its own `../frds/frd-<slug>.md`.
 
+**Ordered by build/dependency sequence** (tactical — not the catalog order of §3/§7): the signing keys
+precede sign-in (minting an access JWT needs a key), and a root session precedes rotation/sign-out. Each
+block states its **Depends on** so the edge is explicit and the roadmap cards inherit the order 1:1.
+
 ### F1 — Email + password sign-up
 - **Intent:** register a user with email + password; store the password only as an Argon2id hash.
 - **Acceptance:** valid input → 200 + user (no token at MVP); duplicate email → 409; weak password → 422;
@@ -173,7 +177,19 @@ splits into its own `../frds/frd-<slug>.md`.
 - **Tasks:** User entity + migration · `Argon2PasswordEncoder` bean · `signUp` use-case + route ·
   unit (policy) + integration (persisted hash, duplicate) tests.
 
-### F2 — Sign-in → hybrid credentials
+### F2 — JWKS + signing keys
+- **Intent:** stand up the RS256 key set with mint/verify capability and publish the public keys; rotate
+  on cadence; verify tokens during the grace window. *(Issuance foundation — must exist before sign-in can
+  mint an access JWT.)*
+- **Acceptance:** `/.well-known/jwks.json` serves active (+ grace) keys with `Cache-Control: max-age=600`;
+  a rotation adds a key and tokens signed by the previous key still verify within grace; private key is
+  encrypted at rest and never served.
+- **Validation:** RS256/2048; lazy rotation 90 d + 30 d grace; admin path for out-of-band rotation.
+- **Tasks:** `jwks` table + encrypted key store · `JWKSource` + `NimbusJwtEncoder` · JWKS route ·
+  rotation logic + admin trigger · integration test (serve, rotate, grace verify).
+
+### F3 — Sign-in → hybrid credentials
+- **Depends on:** F1 (users), F2 (a signing key to mint the access JWT).
 - **Intent:** verify credentials, open a root session, return `{ accessToken (RS256 JWT), refreshToken }`.
 - **Acceptance:** good creds → 200 with both tokens, a `sessions` row with fresh `family_id`,
   `parent_id NULL`; bad creds → 401; the JWT verifies against the JWKS and carries `sub/email/jti`.
@@ -181,7 +197,15 @@ splits into its own `../frds/frd-<slug>.md`.
 - **Tasks:** `mintAccessToken` (Nimbus) · session creation + family root · `signIn` use-case + route ·
   integration test (token verifies, session shape).
 
-### F3 — Refresh rotation + reuse-detection  *(centerpiece)*
+### F4 — Current user (`/me`)
+- **Depends on:** F3 (a JWT to present), F2 (keys to verify it).
+- **Intent:** return the authenticated user for a valid access JWT. *(Closes the issue→verify loop with the
+  smallest protected route before the rotation deep-dive.)*
+- **Acceptance:** valid Bearer → 200 user payload; missing/invalid/expired → 401.
+- **Tasks:** security filter chain (auth-service) · `getMe` route · integration test (valid + 401 paths).
+
+### F5 — Refresh rotation + reuse-detection  *(centerpiece)*
+- **Depends on:** F3 (the root session it rotates).
 - **Intent:** exchange a refresh token for a new access + refresh, rotating atomically; detect reuse and
   revoke the family.
 - **Acceptance:** valid refresh → 200 new pair, old session `rotated_at` set, new session chained
@@ -192,25 +216,12 @@ splits into its own `../frds/frd-<slug>.md`.
 - **Tasks:** locked finder · `rotateToken` `@Transactional` use-case · `revokeFamily` · route + response
   shape · integration tests (rotate, reuse-after-rotate, concurrent race, revoked, expired).
 
-### F4 — Sign-out (session revocation)
+### F6 — Sign-out (session revocation)
+- **Depends on:** F3 (a session to revoke); reuses F5's `revokeFamily` / revocation path.
 - **Intent:** revoke the presented session.
 - **Acceptance:** `sign-out` → that session's `revoked_at` set; a subsequent rotate on it → 401; the
   access token lives out its ≤15 min TTL (accepted gap).
 - **Tasks:** `signOut` use-case + route · integration test.
-
-### F5 — Current user (`/me`)
-- **Intent:** return the authenticated user for a valid access JWT.
-- **Acceptance:** valid Bearer → 200 user payload; missing/invalid/expired → 401.
-- **Tasks:** security filter chain (auth-service) · `getMe` route · integration test (valid + 401 paths).
-
-### F6 — JWKS publication + key rotation
-- **Intent:** publish RS256 public keys; rotate on cadence; verify tokens during the grace window.
-- **Acceptance:** `/.well-known/jwks.json` serves active (+ grace) keys with `Cache-Control: max-age=600`;
-  a rotation adds a key and tokens signed by the previous key still verify within grace; private key is
-  encrypted at rest and never served.
-- **Validation:** RS256/2048; lazy rotation 90 d + 30 d grace; admin path for out-of-band rotation.
-- **Tasks:** `jwks` table + encrypted key store · `JWKSource` + `NimbusJwtEncoder` · JWKS route ·
-  rotation logic + admin trigger · integration test (serve, rotate, grace verify).
 
 ## 9. Open items
 

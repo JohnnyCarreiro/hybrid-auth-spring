@@ -2,7 +2,7 @@
 id: EPIC-001
 slug: bootstrap
 type: infra
-status: active
+status: done
 owner: Johnny Carreiro
 sdd:
 target_window: 2026-06
@@ -53,12 +53,12 @@ Redis; CI runs build + test on every push/PR; the first release is tagged `v0.1.
 
 ## Exits with
 
-- [ ] `./gradlew build` green across modules.
-- [ ] `docker compose up` brings the full stack up.
-- [ ] CI runs build + test on push/PR (OQ-002).
-- [ ] Lint/format gate wired (OQ-003).
-- [ ] Portfolio-grade README + `LICENSE` (FEAT-004).
-- [ ] Released: `dev → main` merge tagged `v0.1.0`.
+- [x] `./gradlew build` green across modules.
+- [x] `docker compose up` brings the full stack up.
+- [x] CI runs build + test on push/PR (OQ-002).
+- [x] Lint/format gate wired (OQ-003).
+- [x] Portfolio-grade README + `LICENSE` (FEAT-004).
+- [x] Released: `dev → main` merge tagged `v0.1.0`.
 
 ## Related decisions
 
@@ -75,3 +75,4 @@ Redis; CI runs build + test on every push/PR; the first release is tagged `v0.1.
 2026-06-06 — Activated; FEAT-001 build-skeleton started.
 2026-06-07 — FEAT-001 done (merged into epic). FEAT-003 runtime baseline (Jetty + Flyway, ADR-0004) planned.
 2026-06-07 — FEAT-002/003 done (merged). release-please wired (v0.1.0 automation). FEAT-004 project README + MIT LICENSE started.
+2026-06-07 — **CLOSED.** FEAT-004 done; all exits met; **`v0.1.0` released** (tag + GitHub Release). Epic → Done.

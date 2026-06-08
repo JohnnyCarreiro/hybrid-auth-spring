@@ -11,11 +11,11 @@
 > secret**.
 
 > [!NOTE]
-> **Status: bootstrap.** The Gradle multi-module skeleton, per-service isolated databases, the
-> runtime baseline (Jetty + Flyway), and CI are in place and reproducible from a clean checkout. The
-> auth flows (sign-up/sign-in, refresh rotation + reuse-detection, JWKS) and the projects/tasks domain
-> are **designed and on the roadmap** — see [Roadmap](#roadmap). Nothing below is claimed as shipped
-> unless it is in the **Done** column.
+> **Status: auth shipped (`v0.2.0`).** The full auth-service flow — sign-up, sign-in, `/me`, refresh
+> rotation + reuse-detection, sign-out, and JWKS — is implemented and covered by Testcontainers
+> integration tests. The **projects/tasks** domain (resource-service) is the next epic — see
+> [Roadmap](#roadmap). The diagrams below describe the designed system; each route table marks what is
+> shipped vs planned.
 
 ## The problem it proves
 
@@ -34,6 +34,71 @@ design mirrors a hybrid session+JWT / JWKS model the author runs in production o
 (better-auth + JWKS), reimplemented idiomatically in Spring Security 6. See
 [ADR-0002](docs/hybrid-auth-spring/architecture/adrs/0002-auth-stack-handbuilt-rs256-issuer.md) for why
 it is hand-built rather than an off-the-shelf OAuth2 product.
+
+## Where this fits
+
+The two services here are the reusable core of a larger, real-world shape: **many client apps, each
+behind its own BFF, sharing one identity authority and verifying tokens at every backend.**
+
+```mermaid
+flowchart TB
+    subgraph clients["Client apps"]
+        webBO["web · back-office"]
+        app["desktop / mobile app"]
+        webC["web · customer"]
+    end
+    subgraph bff["BFF tier — one trusted server-side BFF per client"]
+        bff1["BFF"]
+        bff2["BFF"]
+        bff3["BFF"]
+    end
+    subgraph shared["Shared platform services"]
+        auth["auth-service — issuer + JWKS<br/>(this repo)"]
+        be["main backend(s) — BE<br/>resource-service = one BE (this repo)"]
+    end
+    authstore[("auth DB + Redis")]
+    appstore[("app DB")]
+
+    webBO --- bff1
+    app --- bff2
+    webC --- bff3
+    bff1 -- "sign-in / refresh<br/>(browser session ↔ BFF via cookies)" --> auth
+    bff2 --> auth
+    bff3 --> auth
+    bff1 -- "Bearer JWT" --> be
+    bff2 --> be
+    bff3 --> be
+    auth -. "JWKS public key — local verify, no shared secret" .-> be
+    auth --- authstore
+    be --- appstore
+```
+
+**Scenarios this pattern is for:**
+
+- **Multi-client product suites** — a back-office, a customer web app, and a mobile/desktop app that
+  must authenticate against **one** identity authority: same accounts and sessions, one place to rotate
+  signing keys and revoke a stolen token family.
+- **BFF-per-client** — each front-end has its own server-side BFF that holds the browser session
+  (HttpOnly cookies), exchanges credentials for short-lived JWTs, and calls the backends on the
+  client's behalf. Tokens never live in the browser, so an XSS has a far smaller blast radius.
+- **Many backends, stateless verification** — every backend (the `resource-service` is one example BE)
+  verifies JWTs **locally** against the auth-service JWKS — no shared secret, no per-request call to
+  auth. New backends scale out without touching the issuer.
+- **Centralized auth lifecycle** — sign-in, refresh rotation + reuse-detection, sign-out, and
+  signing-key rotation live in one service, decoupled from business logic.
+
+**This repo implements the two reusable core pieces** — the **auth-service** (issuer + JWKS) and **one
+BE** (the `resource-service`). The client apps and their BFFs are the surrounding context you add per
+product; they're out of scope here, but they decide *where the session cookie lives* (the BFF) and
+therefore *where CSRF defense belongs*.
+
+> **CSRF.** The auth-service and resource-service are **stateless token APIs**: auth travels in the
+> `Authorization: Bearer` header (and the refresh token in the request body), never in an ambient
+> session cookie — so a cross-site request can't forge them, and these APIs are CSRF-immune by
+> construction (which is why CSRF is disabled in Spring Security here, deliberately). CSRF protection
+> belongs at the **BFF ↔ browser edge**, where the session *does* live in a cookie (SameSite cookies +
+> an anti-CSRF token). Full analysis in the
+> [threat model](docs/hybrid-auth-spring/architecture/threat-model.md#csrf-posture).
 
 ## How it works
 
@@ -113,10 +178,10 @@ just dev-auth           # one at a time: dev-auth / dev-resource
 
 ## API surface
 
-The designed surface (from the [SRS+SAD](docs/hybrid-auth-spring/architecture/srs+sad.md) §1.4).
-Domain routes are **planned** — they land in the capability epics, not bootstrap.
+The [SRS+SAD](docs/hybrid-auth-spring/architecture/srs+sad.md) §1.4 surface. The **auth-service routes
+are shipped** (`v0.2.0`); the **resource-service** routes are **planned** (next epic).
 
-**auth-service**
+**auth-service** — shipped
 
 | Route | Purpose |
 |-------|---------|
@@ -153,7 +218,7 @@ Capability-first; milestone = release tag. Tracked under
 | Stage | Scope | Status |
 |-------|-------|--------|
 | **Bootstrap** (EPIC-001) | Multi-module skeleton, isolated DBs, Jetty + Flyway runtime, CI + format gate | ✅ done → cuts `v0.1.0` |
-| **Auth** | Sign-up/in, RS256 issuance, sessions, refresh rotation + reuse-detection, JWKS | ⏳ planned |
+| **Auth** (EPIC-002) | Sign-up/in, RS256 issuance, sessions, refresh rotation + reuse-detection, JWKS | ✅ done → cuts `v0.2.0` |
 | **Resource** | Projects/tasks CRUD, JWT validation via JWKS, ownership authorization | ⏳ planned |
 | **Phase 2** | OAuth/social login, RBAC, rate limiting, JWKS rotation with grace window, optional frontend | 🅿️ deferred |
 

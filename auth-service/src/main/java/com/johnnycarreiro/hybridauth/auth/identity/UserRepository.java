@@ -1,5 +1,6 @@
 package com.johnnycarreiro.hybridauth.auth.identity;
 
+import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -11,4 +12,10 @@ public interface UserRepository extends JpaRepository<User, UUID> {
    * traverses the embedded {@link Email} value object to its {@code value} column.
    */
   boolean existsByEmail_Value(String email);
+
+  /**
+   * The account for a normalized email, if any (used by sign-in, F3). The {@code Email_Value} path
+   * traverses the embedded {@link Email} value object to its {@code value} column.
+   */
+  Optional<User> findByEmail_Value(String email);
 }

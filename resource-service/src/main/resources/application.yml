@@ -12,6 +12,13 @@ spring:
   flyway:
     enabled: true
 
+# The auth-service JWKS endpoint this service verifies access tokens against (ADR-0005). The
+# JwksTokenVerifier caches the public keys in memory and refetches here once on a verify miss
+# (key rotation); there is no shared secret and no per-request call to auth on the happy path.
+resource:
+  auth:
+    jwks-uri: ${RESOURCE_AUTH_JWKS_URI:http://localhost:3333/.well-known/jwks.json}
+
 server:
   port: ${RESOURCE_PORT:3334}
 

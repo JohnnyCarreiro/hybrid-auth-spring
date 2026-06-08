@@ -46,7 +46,10 @@ mirrors a hybrid-auth model the author designed and runs in production on anothe
   token is the server-side source of truth (Postgres), cached in Redis. Refresh rotation +
   reuse-detection (token-family revocation). Exact TTLs and key-rotation cadence: see OQ in `open-questions.md`.
 - **Security — credential hygiene.** Passwords hashed (BCrypt/Argon2). RS256 dev keys are never committed.
-- **Observability (dev).** OpenAPI/Swagger UI on both services; structured logs (playbook §14).
+- **Observability (dev).** OpenAPI/Swagger UI on both services; structured logs (playbook §14). At the
+  MVP only `GET /health` (liveness) is wired; Swagger UI, metrics, and tracing are **deferred** — a real
+  deployment would carry all of them (see §2.6 and ADR-0008). A hand-written API reference in the
+  `README.md` stands in for live Swagger until then.
 - **Reproducibility.** `docker compose up` brings up the full stack (both services + Postgres + Redis).
 - **Testability without a front-end.** All flows exercisable via Insomnia/Postman; auth-critical
   paths covered by integration tests on Testcontainers.
@@ -273,6 +276,33 @@ edge** (where a session cookie exists) and is the BFF's responsibility, out of s
 Phase 2 / bonus, in rough order: a thin front-end; refactor the resource-service toward DDD / clean
 architecture; RBAC/roles; rate limiting + account lockout; JWKS key rotation with a publication grace
 window; OAuth/social login. None of these change the core boundary established here.
+
+**Deferred operational surface (ADR-0008).** A production build of either service would also carry,
+and the showcase intentionally omits: **OpenAPI/Swagger UI** on both services (REQ-012 — a hand-written
+API reference in the `README.md` stands in meanwhile); **observability** — metrics (Micrometer →
+Prometheus: sign-ins, rotations, reuse-detections, JWKS fetch/cache-miss), distributed tracing
+(OpenTelemetry across BFF → auth → resource), structured JSON logs with correlation ids, and the
+broader actuator surface beyond `/health`; and an **automated end-to-end harness** (the cross-service
+flow was validated by hand for the resource epic — module suites cover each service in isolation).
+
+### 2.7 Cross-service identity synchronization
+
+A user exists in two databases (ADR-0003): `auth.users` is the source of truth, `app.users` is a local
+**mirror** keyed by the auth user id (the access-token `sub`). The sync model (ADR-0006 / ADR-0007):
+
+- **Creation — JIT, create-only.** The resource-service provisions a mirror row on the first
+  authenticated request, from the verified JWT claims (`sub`, `email`, `email_verified`; `name` is not
+  in the token). Provisioning runs **before authorization** — the row is a self-keyed identity cache, so
+  this leaks nothing and is intended; a user who only makes denied (404) cross-user calls still gets
+  their own row. It is **never updated** from a later token (`INSERT … ON CONFLICT DO NOTHING`).
+- **Updates — event-driven (preferred) over callback (deferred).** Propagating later changes
+  (email/name) is **not built** at the MVP. The decided direction is auth-emitted domain events
+  (`user.updated`) the resource-service consumes; an auth→backend callback is the documented lesser
+  alternative (couples the issuer to its consumers). The reference stays one-way: consumers point at
+  auth, auth points at no one. See ADR-0007 and OQ-007.
+
+Ownership is keyed by the immutable `sub`, so mirror staleness never affects authorization — only the
+convenience copy of identity fields.
 
 ---
 

@@ -58,9 +58,9 @@ the private key never leaves it.
 
 ## Exits with
 
-- [ ] F1 sign-up · F2 JWKS/keys · F3 sign-in · F4 `/me` · F5 rotation+reuse ★ · F6 sign-out — all SDD §8 acceptance met.
-- [ ] Auth-critical flows covered by Testcontainers integration tests (ADR-0001).
-- [ ] `feat/<NNN> → epic/002-auth → PR` loop followed (bootstrap exception is over).
+- [x] F1 sign-up · F2 JWKS/keys · F3 sign-in · F4 `/me` · F5 rotation+reuse ★ · F6 sign-out — all SDD §8 acceptance met.
+- [x] Auth-critical flows covered by Testcontainers integration tests (ADR-0001).
+- [x] `feat/<NNN> → epic/002-auth` merges done (six features); **epic → `dev` PR pending human validation** (§16.3).
 - [ ] Released: `dev → main` tagged `v0.2.0`.
 
 ## Related decisions
@@ -77,3 +77,12 @@ the private key never leaves it.
 
 2026-06-07 — Planned & activated after the `v0.1.0` release. SDD-001 §8 reordered to build sequence (signing
 keys before sign-in). Cards FEAT-005..010 created. First build: FEAT-005 (F1 sign-up).
+
+2026-06-08 — All six features (F1–F6) built and merged into `epic/002-auth`, each on its own `feat/<NNN>`
+branch with a closing retro; OQ-005 resolved (uuid-creator, domain-generated). Full multi-module
+`./gradlew build` green — auth-service 38 tests incl. the JWKS grace-window verify and the concurrent
+FOR-UPDATE rotation race. **Pending human validation (§16.3) before the epic → `dev` PR and the `v0.2.0`
+release.** Notable: the reuse-detection revoke runs inline under `noRollbackFor` (a `REQUIRES_NEW` revoke
+self-deadlocks against the rotation's own row lock); the auth-service is its own resource server for `/me`
+(local JWKS decode, no self-HTTP); recent Docker Engines need `DOCKER_HOST` + `api.version` for Testcontainers
+(handled in the root build).

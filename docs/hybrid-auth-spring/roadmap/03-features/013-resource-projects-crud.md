@@ -5,10 +5,11 @@ epic: 003-resource
 milestone: 003-resource
 sdd: SDD-002
 frd: F3
-status: in progress
+status: done
 depends-on: [011-resource-jwt-verifier, 012-resource-user-mirror]
 blocks: [014-resource-tasks-crud]
 date: 2026-06-08
+closed: 2026-06-08
 ---
 
 # FEAT-013 — resource projects CRUD (F3)

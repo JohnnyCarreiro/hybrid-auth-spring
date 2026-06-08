@@ -5,10 +5,11 @@ epic: 003-resource
 milestone: 003-resource
 sdd: SDD-002
 frd: F2
-status: in progress
+status: done
 depends-on: [011-resource-jwt-verifier]
 blocks: [013-resource-projects-crud]
 date: 2026-06-08
+closed: 2026-06-08
 ---
 
 # FEAT-012 — resource identity mirror (F2)

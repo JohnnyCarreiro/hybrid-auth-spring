@@ -2,7 +2,7 @@
 id: EPIC-003
 slug: resource
 type: capability
-status: active
+status: done
 owner: Johnny Carreiro
 sdd: SDD-002
 target_window: 2026-06
@@ -59,10 +59,10 @@ issued or rotated here.
 
 ## Exits with
 
-- [ ] F1 verifier ★ · F2 mirror · F3 projects CRUD · F4 tasks CRUD — all SDD §8 acceptance met.
-- [ ] Resource-critical flows covered by Testcontainers integration tests + the verifier unit test (ADR-0001).
-- [ ] Feature merges done; epic squash-merged to `dev` via PR (§16.3).
-- [ ] Released: `dev → main` tagged `v0.3.0`.
+- [x] F1 verifier ★ · F2 mirror · F3 projects CRUD · F4 tasks CRUD — all SDD §8 acceptance met.
+- [x] Resource-critical flows covered by Testcontainers integration tests + the verifier unit test (ADR-0001).
+- [x] Feature merges done; epic squash-merged to `dev` via PR #14 (§16.3).
+- [x] Released: `dev → main` tagged `v0.3.0`.
 
 ## Related decisions
 
@@ -87,3 +87,9 @@ the per-feature branches / epic → `dev` PR and the `v0.3.0` release.** Notable
 hand-builds what Spring's `jwk-set-uri` does internally, for symmetry with the hand-built issuer and to
 keep the mechanism visible (ADR-0005); ownership uses 404 not 403 to avoid confirming others' resources;
 tasks derive ownership through the parent project (no `owner_id` on a task).
+
+2026-06-08 — Validated (tests + folder structure + docs adherence + file read-through) and exercised
+full-stack in Docker (sign-up/in, /me, rotation+reuse, sign-out, resource CRUD, forged-token → 401,
+cross-user → 404, refresh → retry). Follow-ups landed: ADR-0007/0008 + SRS+SAD §2.7, `infra/web` →
+`infra/mvc` rename, compose `AUTH_JWKS_ENC_KEY` fix, README API reference. PR #14 squash-merged to `dev`.
+**EPIC-003 closed → `v0.3.0` release.**

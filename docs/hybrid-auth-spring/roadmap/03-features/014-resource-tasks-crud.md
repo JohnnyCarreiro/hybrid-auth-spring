@@ -5,10 +5,11 @@ epic: 003-resource
 milestone: 003-resource
 sdd: SDD-002
 frd: F4
-status: in progress
+status: done
 depends-on: [013-resource-projects-crud]
 blocks: []
 date: 2026-06-08
+closed: 2026-06-08
 ---
 
 # FEAT-014 — resource tasks CRUD (F4)

@@ -20,6 +20,18 @@ dependencies {
     implementation("org.flywaydb:flyway-core")
     implementation("org.flywaydb:flyway-database-postgresql")
 
+    // Bean validation on inbound request DTOs (jakarta.validation).
+    implementation("org.springframework.boot:spring-boot-starter-validation")
+
+    // Identity (F1): the User aggregate mints its own UUID v7 — domain-owned identity, not
+    // delegated to the ORM. `uuid-creator` provides the time-ordered (v7) algorithm the JDK lacks.
+    implementation("com.github.f4b6a3:uuid-creator:5.3.7")
+
+    // Password hashing: Argon2id (ADR-0002) via spring-security-crypto; BouncyCastle backs Argon2.
+    implementation("org.springframework.security:spring-security-crypto")
+    // BouncyCastle backs Argon2id; not managed by the Spring Boot BOM, so the version is explicit.
+    implementation("org.bouncycastle:bcprov-jdk18on:1.78.1")
+
     developmentOnly("org.springframework.boot:spring-boot-devtools")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")

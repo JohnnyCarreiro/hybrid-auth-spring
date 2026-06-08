@@ -79,7 +79,57 @@ JWKS + ownership-protected CRUD path end-to-end and nothing more.
 
 ## 2. Software Architecture (SAD)
 
-### 2.1 High-level shape
+### 2.1 System context & high-level shape
+
+In a real deployment these two services are **shared platform pieces** behind a fleet of clients, each
+fronted by its own BFF. This repo implements the reusable core (the auth-service and one BE); the
+clients and BFFs are the surrounding context that shapes the trust boundaries below.
+
+```mermaid
+flowchart TB
+    subgraph clients["Client apps"]
+        webBO["web · back-office"]
+        app["desktop / mobile app"]
+        webC["web · customer"]
+    end
+    subgraph bff["BFF tier — one trusted server-side BFF per client"]
+        bff1["BFF"]
+        bff2["BFF"]
+        bff3["BFF"]
+    end
+    subgraph core["This repo (shared platform core)"]
+        auth["auth-service<br/>issuer + JWKS"]
+        be["resource-service<br/>(one example BE)"]
+    end
+    authstore[("auth DB + Redis")]
+    appstore[("app DB")]
+
+    webBO --- bff1
+    app --- bff2
+    webC --- bff3
+    bff1 -- "sign-in / refresh<br/>(browser session ↔ BFF via cookies)" --> auth
+    bff2 --> auth
+    bff3 --> auth
+    bff1 -- "Bearer JWT" --> be
+    bff2 --> be
+    bff3 --> be
+    auth -. "JWKS public key — local verify, no shared secret" .-> be
+    auth --- authstore
+    be --- appstore
+```
+
+**When to reach for this shape:** multi-client product suites (back-office + customer web + mobile)
+that need **one** identity authority; a **BFF-per-client** that keeps the browser session in cookies
+and hands short-lived JWTs to the backends (tokens never reach the browser); and **many backends** that
+verify JWTs locally via JWKS — no shared secret, no per-request auth call — so new backends scale out
+without touching the issuer. Centralizing sign-in, refresh rotation + reuse-detection, sign-out, and
+key rotation in one service decouples auth from business logic.
+
+The cookie-bearing edge is the **BFF ↔ browser** boundary; the token-bearing edges (BFF → services,
+service → service) carry no ambient credential. That split is exactly why the services here disable
+CSRF safely while the BFFs must not — see §2.5 and `threat-model.md`.
+
+Zooming into the core this repo builds:
 
 A **Gradle multi-module monorepo**. Two Spring Boot applications (`auth-service`, `resource-service`)
 and an optional `shared` module for cross-cutting contracts. Each service owns an **isolated database**
@@ -208,8 +258,15 @@ public key. No shared secret crosses the boundary.
 The asset is user identity and the ability to act as a user. Primary threats: refresh-token theft
 (mitigated by rotation + reuse-detection / family revocation), signing-key compromise (private key
 encrypted at rest and never exported; only the public side is published), and forged tokens (rejected
-by RS256 signature verification against JWKS). Passwords are stored hashed. See `threat-model.md` for
-the expanded table.
+by RS256 signature verification against JWKS). Passwords are stored hashed; user enumeration is closed
+by a uniform 401 + a decoy-hash timing equalizer on sign-in.
+
+**CSRF** is **not applicable to these services by construction**: they are stateless token APIs (no
+server-side auth cookie — the access JWT rides the `Authorization` header, the refresh token rides the
+request body), so a cross-site request carries no ambient credential to abuse. Spring Security's CSRF
+filter is therefore disabled deliberately, not by omission. CSRF defense belongs at the **BFF ↔ browser
+edge** (where a session cookie exists) and is the BFF's responsibility, out of scope here. See
+`threat-model.md` for the full table and the CSRF analysis.
 
 ### 2.6 Future directions
 

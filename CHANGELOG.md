@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.0](https://github.com/JohnnyCarreiro/hybrid-auth-spring/compare/v0.2.0...v0.3.0) (2026-06-08)
+
+
+### Features
+
+* **resource:** projects/tasks CRUD verified via JWKS, with a create-only identity mirror ([#14](https://github.com/JohnnyCarreiro/hybrid-auth-spring/issues/14)) ([4a7f922](https://github.com/JohnnyCarreiro/hybrid-auth-spring/commit/4a7f922f588fcd28e9d28840bf423b68a5550cf8))
+
 ## [0.2.0](https://github.com/JohnnyCarreiro/hybrid-auth-spring/compare/v0.1.0...v0.2.0) (2026-06-08)
 
 

@@ -14,6 +14,11 @@ ADRs capture decisions that have lasting structural consequences. Short, dated, 
 | # | Title | Status | Milestone / Sprint |
 |---|-------|--------|----------------|
 | [0001](0001-testing-stack-junit-mockito.md) | Testing stack: JUnit 5 + Mockito (+ Testcontainers for integration) | Accepted | 0 |
+| [0002](0002-auth-stack-handbuilt-rs256-issuer.md) | Auth stack: hand-built RS256 issuer on Spring Security 6 | Accepted | 2 |
+| [0003](0003-database-per-service-isolation.md) | Database-per-service: isolate auth and app data stores | Accepted | 1 |
+| [0004](0004-runtime-baseline-jetty-flyway.md) | Runtime baseline: Jetty embedded server + Flyway migrations | Accepted | 1 |
+| [0005](0005-resource-server-jwks-verifier.md) | Resource-server token verification: a hand-built JWKS verifier | Accepted | 3 |
+| [0006](0006-user-identity-sync.md) | User identity sync: create-only mirror, deferred event-based updates | Accepted | 3 |
 
 ## Template
 

@@ -12,7 +12,8 @@ package com.johnnycarreiro.hybridauth.auth.support.error;
 public enum AuthErrorCode {
   EMAIL_ALREADY_TAKEN(409),
   WEAK_PASSWORD(422),
-  INVALID_CREDENTIALS(401);
+  INVALID_CREDENTIALS(401),
+  UNAUTHENTICATED(401);
 
   private final int httpStatus;
 

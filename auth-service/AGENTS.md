@@ -23,8 +23,8 @@ the public JWKS endpoint (one-way; SDD-001 §1).
 
 ```
 auth-service/
-├── identity/        — the User aggregate, Email value object, password policy, sign-up use case + web
-├── support/         — cross-cutting: IdMint (UUID v7), CryptoConfig (Argon2id), error/ (typed + handler)
+├── identity/        — the User aggregate, Email value object, password policy, sign-up + getMe use cases + web (/me)
+├── support/         — cross-cutting: IdMint (UUID v7), CryptoConfig (Argon2id), error/ (typed + handler), security/ (filter chain + JwtDecoder)
 ├── (sessions/)      — refresh sessions + rotation/reuse-detection            [arrives with F3/F5]
 ├── (jwks/)          — RS256 key set, encrypted private keys, JWKS endpoint   [arrives with F2]
 └── src/main/resources/db/migration/  — Flyway: V1 baseline, V2 users, …

@@ -14,6 +14,10 @@ kanban-plugin: board
 
 ## Done
 
+- [x] [[../03-features/014-resource-tasks-crud|FEAT-014 — tasks CRUD (F4)]]
+- [x] [[../03-features/013-resource-projects-crud|FEAT-013 — projects CRUD (F3)]]
+- [x] [[../03-features/012-resource-user-mirror|FEAT-012 — identity mirror (F2)]]
+- [x] [[../03-features/011-resource-jwt-verifier|FEAT-011 — JWT verifier ★ (F1)]]
 - [x] [[../03-features/010-auth-signout|FEAT-010 — sign-out (F6)]]
 - [x] [[../03-features/009-auth-refresh-rotation|FEAT-009 — refresh rotation + reuse ★ (F5)]]
 - [x] [[../03-features/008-auth-me|FEAT-008 — /me (F4)]]

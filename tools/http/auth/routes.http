@@ -1,0 +1,246 @@
+# auth-service — manual route tests (EPIC-002 / SDD-001 §7)
+# Works with Kulala (nvim), VS Code REST Client, and JetBrains HTTP Client.
+#
+# Prereq:
+#   docker compose up -d postgres            # the `auth` database (ADR-0003)
+#   export AUTH_JWKS_ENC_KEY=$(openssl rand -base64 32)   # JWKS private-key cipher (required)
+#   ./gradlew :auth-service:bootRun          # serves on AUTH_PORT (default 3333)
+#
+# This showcase's auth model (how it differs from the my-approfile reference):
+#   - Sign-up does NOT authenticate and has NO email-verification step. It just
+#     returns the created user (200, no tokens). Sign-in is a separate call.
+#   - Sign-in returns { accessToken (RS256 JWT), refreshToken (opaque), user }.
+#   - GET /me is verified by the ACCESS JWT (Bearer), checked LOCALLY against the
+#     JWKS — the auth-service is its own resource server. (The reference validated
+#     /users/me via the session/refresh token; here that is the JWT.)
+#   - POST /auth/token (rotate) and POST /auth/sign-out take the refresh token in
+#     the JSON BODY, not as a Bearer header.
+#   - Errors are RFC 7807 ProblemDetail with a stable `code`, e.g.
+#     { "status": 409, "detail": "...", "code": "EMAIL_ALREADY_TAKEN" }.
+#     Security 401s (missing/invalid Bearer on /me) come from Spring Security.
+#
+# Rotation + reuse-detection flow (SDD-001 §8 F5):
+#   1. Sign in — stashes refreshToken AND originalRefreshToken.
+#   2. "Rotate (happy path)" — returns a new { accessToken, refreshToken };
+#      the handler overwrites refreshToken (originalRefreshToken is preserved).
+#   3. "Replay original (expect 401 REFRESH_REUSE_DETECTED)" — the original is now
+#      a rotated row → the server revokes the whole family + 401.
+#   4. "Rotate latest after family revoke (expect 401 SESSION_REVOKED)".
+
+@base = http://localhost:3333
+@email = alice@example.com
+@password = a-strong-passphrase
+@name = Alice Example
+
+
+### Health probe
+GET {{base}}/health
+Accept: application/json
+
+
+# ============================================================================
+# F1 — Sign-up (email + password)
+# ============================================================================
+
+### Sign-up (happy path) — 200 + user; no token (no auto-login at MVP)
+# @name signUp
+POST {{base}}/auth/sign-up
+Content-Type: application/json
+
+{
+  "email": "{{email}}",
+  "password": "{{password}}",
+  "name": "{{name}}"
+}
+
+
+### Sign-up — duplicate email (expect 409 EMAIL_ALREADY_TAKEN)
+# Run the happy-path sign-up first. Case-insensitive: a different case collides.
+POST {{base}}/auth/sign-up
+Content-Type: application/json
+
+{
+  "email": "{{email}}",
+  "password": "{{password}}",
+  "name": "{{name}}"
+}
+
+
+### Sign-up — weak password (expect 422 WEAK_PASSWORD)
+# Policy: 12–200 chars (domain/identity/PasswordPolicy).
+POST {{base}}/auth/sign-up
+Content-Type: application/json
+
+{
+  "email": "weakling@example.com",
+  "password": "short",
+  "name": "Weakling"
+}
+
+
+### Sign-up — malformed payload (expect 400 VALIDATION_FAILED)
+POST {{base}}/auth/sign-up
+Content-Type: application/json
+
+{
+  "email": "not-an-email",
+  "password": ""
+}
+
+
+# ============================================================================
+# F3 — Sign-in → hybrid credentials
+# ============================================================================
+
+### Sign-in (happy path) — 200; stashes accessToken + refreshToken
+# @name signIn
+POST {{base}}/auth/sign-in
+Content-Type: application/json
+
+{
+  "email": "{{email}}",
+  "password": "{{password}}"
+}
+
+> {%
+client.global.set("accessToken", response.body.accessToken);
+client.global.set("refreshToken", response.body.refreshToken);
+client.global.set("originalRefreshToken", response.body.refreshToken);
+%}
+
+
+### Sign-in — wrong password (expect 401 INVALID_CREDENTIALS)
+POST {{base}}/auth/sign-in
+Content-Type: application/json
+
+{
+  "email": "{{email}}",
+  "password": "wrong-but-long-enough"
+}
+
+
+### Sign-in — unknown email (expect 401 INVALID_CREDENTIALS; no enumeration)
+# Same code + timing as a wrong password — a decoy Argon2 verify runs either way.
+POST {{base}}/auth/sign-in
+Content-Type: application/json
+
+{
+  "email": "ghost@example.com",
+  "password": "a-strong-passphrase"
+}
+
+
+# ============================================================================
+# F4 — Current user (/me) — Bearer is the ACCESS JWT, verified via JWKS
+# ============================================================================
+
+### /me (happy path) — 200 + user
+GET {{base}}/me
+Authorization: Bearer {{accessToken}}
+Accept: application/json
+
+
+### /me — anonymous (expect 401)
+GET {{base}}/me
+Accept: application/json
+
+
+### /me — bogus token (expect 401)
+GET {{base}}/me
+Authorization: Bearer not.a.jwt
+Accept: application/json
+
+
+# ============================================================================
+# F2 — JWKS publication
+# ============================================================================
+
+### JWKS — public signing keys (Cache-Control: public, max-age=600)
+# The `kid` in your accessToken's JWT header must match one of these. An empty
+# `jwks` table is bootstrapped lazily on the first key use (sign-in).
+GET {{base}}/.well-known/jwks.json
+Accept: application/json
+
+
+# ============================================================================
+# F5 — Refresh rotation + reuse-detection (refresh token goes in the BODY)
+# ============================================================================
+
+### Rotate (happy path) — 200 { accessToken, refreshToken }
+# @name rotate
+# Uses the current {{refreshToken}}; the handler overwrites it with the fresh one
+# so the chain stays valid. {{originalRefreshToken}} is preserved for the replay.
+POST {{base}}/auth/token
+Content-Type: application/json
+
+{
+  "refreshToken": "{{refreshToken}}"
+}
+
+> {%
+client.global.set("accessToken", response.body.accessToken);
+client.global.set("refreshToken", response.body.refreshToken);
+%}
+
+
+### Replay original (expect 401 REFRESH_REUSE_DETECTED — revokes the family)
+# Run signIn, then "Rotate (happy path)", then this. The original now points at a
+# rotated row → reuse is detected, the whole session family is revoked, 401.
+POST {{base}}/auth/token
+Content-Type: application/json
+
+{
+  "refreshToken": "{{originalRefreshToken}}"
+}
+
+
+### Rotate latest after family revoke (expect 401 SESSION_REVOKED)
+# After the replay above, the rotation child is revoked too (whole family dies).
+POST {{base}}/auth/token
+Content-Type: application/json
+
+{
+  "refreshToken": "{{refreshToken}}"
+}
+
+
+### Rotate — unknown token (expect 401 INVALID_REFRESH)
+POST {{base}}/auth/token
+Content-Type: application/json
+
+{
+  "refreshToken": "not-a-real-refresh-token"
+}
+
+
+# ============================================================================
+# F6 — Sign-out (revokes the presented session only)
+# ============================================================================
+
+### Sign-out — 204 No Content
+# Re-run signIn first for a fresh session, then this revokes that refreshToken.
+POST {{base}}/auth/sign-out
+Content-Type: application/json
+
+{
+  "refreshToken": "{{refreshToken}}"
+}
+
+
+### Rotate after sign-out (expect 401 SESSION_REVOKED)
+# The signed-out session can no longer be rotated.
+POST {{base}}/auth/token
+Content-Type: application/json
+
+{
+  "refreshToken": "{{refreshToken}}"
+}
+
+
+### Sign-out — unknown token (expect 401 INVALID_REFRESH)
+POST {{base}}/auth/sign-out
+Content-Type: application/json
+
+{
+  "refreshToken": "not-a-real-refresh-token"
+}

@@ -35,6 +35,71 @@ design mirrors a hybrid session+JWT / JWKS model the author runs in production o
 [ADR-0002](docs/hybrid-auth-spring/architecture/adrs/0002-auth-stack-handbuilt-rs256-issuer.md) for why
 it is hand-built rather than an off-the-shelf OAuth2 product.
 
+## Where this fits
+
+The two services here are the reusable core of a larger, real-world shape: **many client apps, each
+behind its own BFF, sharing one identity authority and verifying tokens at every backend.**
+
+```mermaid
+flowchart TB
+    subgraph clients["Client apps"]
+        webBO["web · back-office"]
+        app["desktop / mobile app"]
+        webC["web · customer"]
+    end
+    subgraph bff["BFF tier — one trusted server-side BFF per client"]
+        bff1["BFF"]
+        bff2["BFF"]
+        bff3["BFF"]
+    end
+    subgraph shared["Shared platform services"]
+        auth["auth-service — issuer + JWKS<br/>(this repo)"]
+        be["main backend(s) — BE<br/>resource-service = one BE (this repo)"]
+    end
+    authstore[("auth DB + Redis")]
+    appstore[("app DB")]
+
+    webBO --- bff1
+    app --- bff2
+    webC --- bff3
+    bff1 -- "sign-in / refresh<br/>(browser session ↔ BFF via cookies)" --> auth
+    bff2 --> auth
+    bff3 --> auth
+    bff1 -- "Bearer JWT" --> be
+    bff2 --> be
+    bff3 --> be
+    auth -. "JWKS public key — local verify, no shared secret" .-> be
+    auth --- authstore
+    be --- appstore
+```
+
+**Scenarios this pattern is for:**
+
+- **Multi-client product suites** — a back-office, a customer web app, and a mobile/desktop app that
+  must authenticate against **one** identity authority: same accounts and sessions, one place to rotate
+  signing keys and revoke a stolen token family.
+- **BFF-per-client** — each front-end has its own server-side BFF that holds the browser session
+  (HttpOnly cookies), exchanges credentials for short-lived JWTs, and calls the backends on the
+  client's behalf. Tokens never live in the browser, so an XSS has a far smaller blast radius.
+- **Many backends, stateless verification** — every backend (the `resource-service` is one example BE)
+  verifies JWTs **locally** against the auth-service JWKS — no shared secret, no per-request call to
+  auth. New backends scale out without touching the issuer.
+- **Centralized auth lifecycle** — sign-in, refresh rotation + reuse-detection, sign-out, and
+  signing-key rotation live in one service, decoupled from business logic.
+
+**This repo implements the two reusable core pieces** — the **auth-service** (issuer + JWKS) and **one
+BE** (the `resource-service`). The client apps and their BFFs are the surrounding context you add per
+product; they're out of scope here, but they decide *where the session cookie lives* (the BFF) and
+therefore *where CSRF defense belongs*.
+
+> **CSRF.** The auth-service and resource-service are **stateless token APIs**: auth travels in the
+> `Authorization: Bearer` header (and the refresh token in the request body), never in an ambient
+> session cookie — so a cross-site request can't forge them, and these APIs are CSRF-immune by
+> construction (which is why CSRF is disabled in Spring Security here, deliberately). CSRF protection
+> belongs at the **BFF ↔ browser edge**, where the session *does* live in a cookie (SameSite cookies +
+> an anti-CSRF token). Full analysis in the
+> [threat model](docs/hybrid-auth-spring/architecture/threat-model.md#csrf-posture).
+
 ## How it works
 
 ```mermaid

@@ -3,7 +3,7 @@ id: MILESTONE-001
 slug: bootstrap
 title: Bootstrap
 window: 2026-06
-status: active
+status: done
 date: 2026-06-05
 ---
 
@@ -27,8 +27,8 @@ Boot services, Postgres + Redis via docker compose, and CI — reproducible from
 
 ## Exit
 
-- [ ] `./gradlew build` green across modules.
-- [ ] `docker compose up` brings up both services + Postgres + Redis.
-- [ ] CI runs build + test on push/PR (OQ-002).
-- [ ] Lint/format gate wired (OQ-003).
-- [ ] Released: `dev → main` merge tagged `v0.1.0` (playbook §16.4 / §5).
+- [x] `./gradlew build` green across modules.
+- [x] `docker compose up` brings up both services + Postgres + Redis.
+- [x] CI runs build + test on push/PR (OQ-002).
+- [x] Lint/format gate wired (OQ-003).
+- [x] Released: `dev → main` merge tagged `v0.1.0` (playbook §16.4 / §5).

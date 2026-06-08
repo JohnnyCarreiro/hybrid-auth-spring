@@ -1,4 +1,4 @@
-package com.johnnycarreiro.hybridauth.resource.infra.web;
+package com.johnnycarreiro.hybridauth.resource.infra.mvc;
 
 import com.johnnycarreiro.hybridauth.resource.services.UserMirror;
 import jakarta.servlet.http.HttpServletRequest;

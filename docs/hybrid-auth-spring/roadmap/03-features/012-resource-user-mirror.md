@@ -39,7 +39,7 @@ not overwrite; concurrent first-requests → one row) + feature DoD (integration
 
 **What landed.** `domain/identity/AppUser` (mirror entity; id = auth `sub`, **not** minted here);
 `AppUserRepository.provisionIfAbsent` (`INSERT … ON CONFLICT (id) DO NOTHING` — create-only,
-concurrency-safe); `services/UserMirror`; `infra/web/MirrorSyncInterceptor` + `WebConfig` (provision from
+concurrency-safe); `services/UserMirror`; `infra/mvc/MirrorSyncInterceptor` + `WebConfig` (provision from
 the verified claims before the controller runs, so the FK is satisfiable; excluded from `/health`).
 
 **Tests.** `UserMirrorIntegrationTest`: first authenticated request provisions exactly one row from the

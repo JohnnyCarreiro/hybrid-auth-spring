@@ -1,4 +1,4 @@
-package com.johnnycarreiro.hybridauth.resource.infra.web;
+package com.johnnycarreiro.hybridauth.resource.infra.mvc;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;

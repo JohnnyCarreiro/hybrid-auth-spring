@@ -35,7 +35,7 @@ resource-service/.../resource/
 ├── services/       — application use cases: ProjectService · TaskService · UserMirror · CurrentUser
 ├── web/            — controllers + request/response DTOs (by feature) + ResourceExceptionHandler
 └── infra/          — database/ (3 JpaRepositories) · security/ (SecurityConfig, JwksTokenVerifier) ·
-                       web/ (MirrorSyncInterceptor, WebConfig)
+                       mvc/ (MirrorSyncInterceptor, WebConfig)
 src/main/resources/db/migration/  — Flyway (app DB): V1 baseline · V2 users (mirror) · V3 projects · V4 tasks
 ```
 
@@ -87,7 +87,7 @@ export JAVA_HOME="$HOME/.sdkman/candidates/java/21.0.5-tem" && export PATH="$JAV
   for `AppUser` (auth owns that id).
 - The error vocabulary is `domain/shared/ResourceErrorCode` — add a variant there (with its status)
   rather than throwing ad-hoc statuses from controllers.
-- The mirror-sync seam is `infra/web/MirrorSyncInterceptor` (provision before the controller runs, so
+- The mirror-sync seam is `infra/mvc/MirrorSyncInterceptor` (provision before the controller runs, so
   the `projects.owner_id` FK is satisfiable). It is excluded from `/health`.
 - This service **must not** issue or rotate tokens. If a feature seems to need that, it belongs in the
   auth-service or the BFF, not here (SDD-002 §1).
